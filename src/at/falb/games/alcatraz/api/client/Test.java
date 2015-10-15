@@ -5,7 +5,7 @@ import at.falb.games.alcatraz.api.Alcatraz;
 import at.falb.games.alcatraz.api.MoveListener;
 import at.falb.games.alcatraz.api.Player;
 import at.falb.games.alcatraz.api.Prisoner;
-
+//HAllo
 /**
  * A test class initializing a local Alcatraz game -- illustrating how
  * to use the Alcatraz API.
