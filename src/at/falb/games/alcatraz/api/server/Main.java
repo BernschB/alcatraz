@@ -7,8 +7,9 @@
 package at.falb.games.alcatraz.api.server;
 
 import at.falb.games.alcatraz.api.common.*;
-import java.util.ArrayList;
-import java.util.logging.LogManager;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.logging.Logger;
 
 /**
@@ -27,10 +28,11 @@ public class Main {
      */
     public static void main(String[] args) {
 
-        String servername = "server";
-        String groupName = "";
-        String myGroupName ="";
+        String host = "server";
+        String groupName = "alcatraz-server";
+        String myNameInGroup ="";
         
+        //Lobbies werden erstellt
         Lobby lobbyTwo = createLobby(2);
         Lobby lobbyThree = createLobby(3);
         Lobby lobbyFour = createLobby(4);
@@ -39,8 +41,16 @@ public class Main {
         LOG.info(lobbyTwo.toString());
         LOG.info(lobbyThree.toString());
         LOG.info(lobbyFour.toString());
-
         
+        //Erstellt einen Registry für RMI Binds auf dem Well known RMI Registry Port (1099)
+        try{
+            LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
+        } catch  (RemoteException e){
+            LOG.info("Could not register Service. " +e.getMessage().toString());
+        }
+        
+        
+       
     }
     
     //Erstellt eine Lobby mit der gewünschten Anzahl der Spieler
