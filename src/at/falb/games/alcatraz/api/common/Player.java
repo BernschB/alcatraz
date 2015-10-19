@@ -5,11 +5,13 @@
  */
 package at.falb.games.alcatraz.api.common;
 
+import java.io.Serializable;
+
 /**
  *
  * @author stefanprinz
  */
-public class Player {
+public class Player implements Serializable {
     
     private int ID;
     private String username;
