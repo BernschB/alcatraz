@@ -8,20 +8,22 @@ package at.falb.games.alcatraz.api.server;
 import at.falb.games.alcatraz.api.common.Lobby;
 import at.falb.games.alcatraz.api.common.Player;
 import at.falb.games.alcatraz.api.common.Server;
-import java.io.InterruptedIOException;
-import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import spread.*;
 import spread.AdvancedMessageListener;
+import spread.SpreadConnection;
+import spread.SpreadException;
+import spread.SpreadGroup;
+import spread.SpreadMessage;
+
 
 /**
  *
  * @author stefanprinz
  */
-public class ServerImpl implements Server {
+public class ServerImpl implements Server, AdvancedMessageListener {
 
     private final static Logger LOG = Logger.getLogger(ServerImpl.class.getName());
 
@@ -32,8 +34,9 @@ public class ServerImpl implements Server {
     public ServerImpl(String privateName, String host, int Port, String spreadGroupName) throws UnknownHostException, SpreadException {
 
         SpreadConnection con = new SpreadConnection();
-        
+
         try {
+            con.add(this);
             con.connect(InetAddress.getByName(host), Port, privateName, false, true); //der 4. Parameter ist für priority connections da, der vierte für GroupMembership.
         } catch (SpreadException e) {
             LOG.info("Spread Connection couldn't be established: " + e.getMessage().toString());
@@ -48,16 +51,16 @@ public class ServerImpl implements Server {
         }
 
         System.out.println(group.toString());
-        
+
         //Erstelle einen Player zum Testen der Übertragung über Spread
         Player player = new Player();
         player.setID(5);
         player.setRMI("rmi://shiiieeet");
         player.setUsername("Phteven");
-        
 
         SpreadMessage message = new SpreadMessage();
         message.setObject(player);
+        //message.setData("yolo".getBytes());
         message.addGroup(spreadGroupName);
         message.setReliable();
 
@@ -65,24 +68,6 @@ public class ServerImpl implements Server {
             con.multicast(message);
         } catch (SpreadException e) {
             LOG.info("Could not join Spread Group: " + e.getMessage().toString());
-        }
-        
-
-        try {
-            SpreadMessage msg = con.receive();
-            //Player pl = new Player();
-            //System.out.println("getObjekt: " + msg.getObject());
-            //Player pl = (Player) msg.getObject();
-            
-            if (msg.isRegular()) {
-                System.out.println("New message from " + msg.getSender() +"Message is: " +msg.toString());
-            } else {
-                System.out.println("New membership message from " + msg.getMembershipInfo().getGroup() +" Message is: "+ msg.getData());
-            }
-        } catch (SpreadException e) {
-            LOG.info("SpreadException: " + e.getMessage().toString());
-        } catch (InterruptedIOException e) {
-            LOG.info("InterruptedIOException: " + e.getMessage().toString());
         }
 
     }
@@ -108,5 +93,33 @@ public class ServerImpl implements Server {
         return lobby;
     }
 
+    //--------------AdvancedMessageListenerMethoden--------------------
+    @Override
+    public void regularMessageReceived(SpreadMessage sm) {
+        //throw new UnsupportedOperationException("regularMessageReceived: Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println("New message from " + sm.getSender());
+        
+        
+        Object obj = null;
+        try {
+            obj = sm.getObject();
+            System.out.println("Objekt = " +obj);
+        } catch (SpreadException ex) {
+            Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        Player pl = new Player();
+        System.out.println("bin jez do");
+        
+
+    }
+
+    @Override
+    public void membershipMessageReceived(SpreadMessage sm) {
+        //throw new UnsupportedOperationException("membershipMessageReceived: Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        System.out.println("New membership message from " + sm.getMembershipInfo().getGroup());
+
+    }
 
 }
