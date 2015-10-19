@@ -7,10 +7,13 @@
 package at.falb.games.alcatraz.api.server;
 
 import at.falb.games.alcatraz.api.common.*;
+import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import spread.SpreadException;
 
 /**
  *
@@ -26,13 +29,15 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SpreadException {
 
-        String host = "server";
-        String groupName = "alcatraz-server";
-        String myNameInGroup ="";
+        String host = "localhost";
+        String spreadGroupName = "alcatraz-server";
+        String mySpreadName ="privatename";
         
-        //Lobbies werden erstellt
+        //Lobbies werden erstellt. Gehört dann in die Impl rein, darum jetzt auskommentiert.
+        
+        /*
         Lobby lobbyTwo = createLobby(2);
         Lobby lobbyThree = createLobby(3);
         Lobby lobbyFour = createLobby(4);
@@ -41,22 +46,25 @@ public class Main {
         LOG.info(lobbyTwo.toString());
         LOG.info(lobbyThree.toString());
         LOG.info(lobbyFour.toString());
+        */
         
         //Erstellt einen Registry für RMI Binds auf dem Well known RMI Registry Port (1099)
         try{
             LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
         } catch  (RemoteException e){
-            LOG.info("Could not register Service. " +e.getMessage().toString());
+            LOG.info("Could not register Service. " +e.getMessage());
+        }
+        
+        try {
+            ServerImpl impl = new ServerImpl(mySpreadName, host, 0, spreadGroupName); //wenn der Port 0 ist, wird der Default Port (4803) verwendet
+        } catch (UnknownHostException e) {
+            LOG.info("Could not create Server Implementation. " +e.getMessage());
         }
         
         
        
     }
     
-    //Erstellt eine Lobby mit der gewünschten Anzahl der Spieler
-    private static Lobby createLobby(int numbPlayer){
-        Lobby lobby = new Lobby(numbPlayer);
-        return lobby;
-    }
+
     
 }
