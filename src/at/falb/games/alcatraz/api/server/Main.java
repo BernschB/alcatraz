@@ -8,6 +8,7 @@ package at.falb.games.alcatraz.api.server;
 
 import at.falb.games.alcatraz.api.common.*;
 import java.net.UnknownHostException;
+import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -33,8 +34,11 @@ public class Main {
 
         String host = "localhost";
         String spreadGroupName = "alcatraz-server";
-        String mySpreadName ="privatename";
+        double randNr = Math.random();
+        String mySpreadName ="server".concat(String.valueOf(randNr));
         
+        System.out.println("Starting up Server...");
+
         //Lobbies werden erstellt. Gehört dann in die Impl rein, darum jetzt auskommentiert.
         
         /*
@@ -48,23 +52,20 @@ public class Main {
         LOG.info(lobbyFour.toString());
         */
         
-        //Erstellt einen Registry für RMI Binds auf dem Well known RMI Registry Port (1099)
+        //Erstellt einen RMI-Registry für RMI Binds auf dem Well known RMI Registry Port (1099). RMI Adressen müssen dann hier Angemeldet werden.
         try{
+            System.out.println("Create RMI-Registry...");
             LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
         } catch  (RemoteException e){
             LOG.info("Could not register Service. " +e.getMessage());
         }
         
-        try {
-            ServerImpl impl = new ServerImpl(mySpreadName, host, 0, spreadGroupName); //wenn der Port 0 ist, wird der Default Port (4803) verwendet
-        } catch (UnknownHostException e) {
-            LOG.info("Could not create Server Implementation. " +e.getMessage());
-        }
+        ServerStart impl = new ServerStart(mySpreadName, host, 0, spreadGroupName);
+   
+        System.out.println("done");
         
-        
+        while(1 == 1){}
        
     }
-    
-
     
 }
