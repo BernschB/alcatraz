@@ -5,13 +5,14 @@
  */
 package at.falb.games.alcatraz.api.common;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  *
  * @author stefanprinz
  */
-public class Lobby {
+public class Lobby implements Serializable {
     
     private ArrayList<Player> lobby = new ArrayList<Player>();
     private int numberPlayer;

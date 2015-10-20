@@ -7,7 +7,6 @@ package at.falb.games.alcatraz.api.common;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 
 /**
  *
@@ -15,10 +14,10 @@ import java.rmi.server.UnicastRemoteObject;
  */
 public interface Server extends Remote {
     
-    public void loginClientClient(Player player);
+    public void loginClient(Player player) throws RemoteException;
 
-    public void logoutClient(Player player);
+    public void logoutClient(Player player) throws RemoteException;
         
-    public void startGame(Lobby lobby);
+    public void startGame(Lobby lobby) throws RemoteException;
     
 }

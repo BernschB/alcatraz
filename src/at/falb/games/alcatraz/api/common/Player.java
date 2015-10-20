@@ -6,6 +6,7 @@
 package at.falb.games.alcatraz.api.common;
 
 import java.io.Serializable;
+import java.rmi.Remote;
 
 /**
  *
