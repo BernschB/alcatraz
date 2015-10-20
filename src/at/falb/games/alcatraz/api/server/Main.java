@@ -34,8 +34,6 @@ public class Main {
 
         String host = "localhost";
         String spreadGroupName = "alcatraz-server";
-        double randNr = Math.random();
-        String mySpreadName ="server".concat(String.valueOf(randNr));
         
         System.out.println("Starting up Server...");
 
@@ -60,12 +58,12 @@ public class Main {
             LOG.info("Could not register Service. " +e.getMessage());
         }
         
-        ServerStart impl = new ServerStart(mySpreadName, host, 0, spreadGroupName);
-   
+        ServerStart impl1 = new ServerStart("Prinzi", host, 0, spreadGroupName);
+        ServerStart impl2 = new ServerStart("Bernschibu", host, 0, spreadGroupName);
+        ServerStart impl3 = new ServerStart("MaterOverlordSlayerOfDarkness", host, 0, spreadGroupName);
+
         System.out.println("done");
-        
-        while(1 == 1){}
-       
+               
     }
     
 }

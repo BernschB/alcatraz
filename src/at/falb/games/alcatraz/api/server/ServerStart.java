@@ -34,10 +34,9 @@ public class ServerStart implements AdvancedMessageListener, Remote {
     //Er bekommt den individuellen Namen jedes Spread-Gruppenmitglieds (also der Server)
     //Den Host auf dem der Spread Deamon läuft wurden. In unserem Fall Localhost (könnte da auch "null" übergeben, dann wird auch der Localhost verwendet)
     //Und die Portnummer --> Default Port wenn 0 (4803)
-    public ServerStart(String privateName, String host, int Port, String spreadGroupName) {
+    public ServerStart(String privateName, String host, int Port, String spreadGroupName) throws SpreadException {
 
-        double randNr = Math.random();
-
+        
         SpreadConnection con = new SpreadConnection();
 
         System.out.println("Joining the Spread Group \"" + spreadGroupName + "\"");
@@ -58,7 +57,8 @@ public class ServerStart implements AdvancedMessageListener, Remote {
         } catch (SpreadException e) {
             LOG.info("Could not join Spread Group: " + e.getMessage().toString());
         }
-
+        
+        /*
         try {
             Naming.rebind("rmi://localhost:1099/".concat(privateName), this);
         } catch (RemoteException ex) {
@@ -66,11 +66,12 @@ public class ServerStart implements AdvancedMessageListener, Remote {
         } catch (MalformedURLException ex) {
             Logger.getLogger("MalformedURL means serious shit" +ServerStart.class.getName()).log(Level.SEVERE, null, ex);
         }
+        */
 
         System.out.println("Join to \"" + group.toString() + "\" successful. Startup complete.");
 
         //Spread Message
-        /*Player player = new Player();
+        Player player = new Player();
          player.setID(5);
          player.setRMI("rmi://shiiieeet");
          player.setUsername("Phteven");
@@ -84,16 +85,16 @@ public class ServerStart implements AdvancedMessageListener, Remote {
          con.multicast(message);
          } catch (SpreadException e) {
          LOG.info("Could not join Spread Group: " + e.getMessage().toString());
-         }*/
+         }
+        
+        //while(1 == 1){}
     }
 
 
     //--------------AdvancedMessageListenerMethoden--------------------
     @Override
     public void regularMessageReceived(SpreadMessage sm) {
-        //throw new UnsupportedOperationException("regularMessageReceived: Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         System.out.println("New message from " + sm.getSender());
-
     }
 
     @Override
@@ -101,7 +102,6 @@ public class ServerStart implements AdvancedMessageListener, Remote {
         //throw new UnsupportedOperationException("membershipMessageReceived: Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 
         System.out.println("New membership message from " + sm.getMembershipInfo().getGroup());
-
     }
 
 }
