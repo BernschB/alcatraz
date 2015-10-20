@@ -29,8 +29,10 @@ public class Main {
     
     /**
      * @param args the command line arguments
+     * @throws spread.SpreadException
+     * @throws java.rmi.RemoteException
      */
-    public static void main(String[] args) throws SpreadException {
+    public static void main(String[] args) throws SpreadException, RemoteException {
 
         String host = "localhost";
         String spreadGroupName = "alcatraz-server";
@@ -60,7 +62,7 @@ public class Main {
         
         ServerStart impl1 = new ServerStart("Prinzi", host, 0, spreadGroupName);
         ServerStart impl2 = new ServerStart("Bernschibu", host, 0, spreadGroupName);
-        ServerStart impl3 = new ServerStart("MaterOverlordSlayerOfDarkness", host, 0, spreadGroupName);
+        ServerStart impl3 = new ServerStart("MasterOverlordSlayerOfDarkness", host, 0, spreadGroupName);
 
         System.out.println("done");
                

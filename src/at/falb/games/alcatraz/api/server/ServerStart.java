@@ -8,6 +8,7 @@ package at.falb.games.alcatraz.api.server;
 import at.falb.games.alcatraz.api.common.Lobby;
 import at.falb.games.alcatraz.api.common.Player;
 import at.falb.games.alcatraz.api.common.Server;
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
@@ -26,7 +27,7 @@ import spread.SpreadMessage;
  *
  * @author stefanprinz
  */
-public class ServerStart implements AdvancedMessageListener, Remote {
+public class ServerStart implements AdvancedMessageListener, Remote, Serializable {
 
     private final static Logger LOG = Logger.getLogger(ServerStart.class.getName());
 
@@ -34,7 +35,7 @@ public class ServerStart implements AdvancedMessageListener, Remote {
     //Er bekommt den individuellen Namen jedes Spread-Gruppenmitglieds (also der Server)
     //Den Host auf dem der Spread Deamon läuft wurden. In unserem Fall Localhost (könnte da auch "null" übergeben, dann wird auch der Localhost verwendet)
     //Und die Portnummer --> Default Port wenn 0 (4803)
-    public ServerStart(String privateName, String host, int Port, String spreadGroupName) throws SpreadException {
+    public ServerStart(String privateName, String host, int Port, String spreadGroupName) throws SpreadException, RemoteException {
 
         
         SpreadConnection con = new SpreadConnection();
@@ -58,15 +59,16 @@ public class ServerStart implements AdvancedMessageListener, Remote {
             LOG.info("Could not join Spread Group: " + e.getMessage().toString());
         }
         
-        /*
+        ServerImpl si = new ServerImpl();
+        
         try {
-            Naming.rebind("rmi://localhost:1099/".concat(privateName), this);
+            Naming.rebind("rmi://localhost:1099/".concat(host), si);
         } catch (RemoteException ex) {
             Logger.getLogger("Remote Exception is stupid..." +ServerStart.class.getName()).log(Level.SEVERE, null, ex);
         } catch (MalformedURLException ex) {
             Logger.getLogger("MalformedURL means serious shit" +ServerStart.class.getName()).log(Level.SEVERE, null, ex);
         }
-        */
+        
 
         System.out.println("Join to \"" + group.toString() + "\" successful. Startup complete.");
 
@@ -86,8 +88,7 @@ public class ServerStart implements AdvancedMessageListener, Remote {
          } catch (SpreadException e) {
          LOG.info("Could not join Spread Group: " + e.getMessage().toString());
          }
-        
-        //while(1 == 1){}
+
     }
 
 
