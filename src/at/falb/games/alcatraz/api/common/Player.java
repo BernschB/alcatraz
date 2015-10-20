@@ -6,7 +6,6 @@
 package at.falb.games.alcatraz.api.common;
 
 import java.io.Serializable;
-import java.rmi.Remote;
 
 /**
  *
@@ -16,6 +15,7 @@ public class Player implements Serializable {
     
     private int ID;
     private String username;
+    private int maxPlayers;
     private String RMI;
 
     /**
@@ -58,6 +58,20 @@ public class Player implements Serializable {
      */
     public void setRMI(String RMI) {
         this.RMI = RMI;
+    }
+    
+    /**
+     * @return the ID
+     */
+    public int getMaxPlayers() {
+        return ID;
+    }
+
+    /**
+     * @param ID the ID to set
+     */
+    public void setMaxPlayers(int maxPlayers) {
+        this.maxPlayers = maxPlayers;
     }
     
 }

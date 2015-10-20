@@ -37,7 +37,6 @@ public class ServerStart implements AdvancedMessageListener, Remote, Serializabl
     //Und die Portnummer --> Default Port wenn 0 (4803)
     public ServerStart(String privateName, String host, int Port, String spreadGroupName) throws SpreadException, RemoteException {
 
-        
         SpreadConnection con = new SpreadConnection();
 
         System.out.println("Joining the Spread Group \"" + spreadGroupName + "\"");
@@ -62,7 +61,7 @@ public class ServerStart implements AdvancedMessageListener, Remote, Serializabl
         ServerImpl si = new ServerImpl();
         
         try {
-            Naming.rebind("rmi://localhost:1099/".concat(host), si);
+            Naming.rebind("rmi://localhost:1099/".concat(privateName), si);
         } catch (RemoteException ex) {
             Logger.getLogger("Remote Exception is stupid..." +ServerStart.class.getName()).log(Level.SEVERE, null, ex);
         } catch (MalformedURLException ex) {
