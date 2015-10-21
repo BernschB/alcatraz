@@ -64,7 +64,7 @@ public class Player implements Serializable {
      * @return the ID
      */
     public int getMaxPlayers() {
-        return ID;
+        return maxPlayers;
     }
 
     /**
