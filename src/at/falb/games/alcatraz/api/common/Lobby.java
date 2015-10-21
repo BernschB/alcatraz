@@ -14,27 +14,47 @@ import java.util.ArrayList;
  */
 public class Lobby implements Serializable {
     
-    private ArrayList<Player> lobby = new ArrayList<Player>();
+    private ArrayList<Player> player = new ArrayList<Player>();
     private int numberPlayer;
-    
-    public Lobby(){}
+    private int maxPlayers;
+
+    public Lobby(Player player)
+    {
+        this.maxPlayers = player.getMaxPlayers();
+        this.numberPlayer = 1;
+    }
     public Lobby(int numberPlayer){
         this.numberPlayer = numberPlayer;
     }
-
-    /**
-     * @return the lobby
-     */
-    public ArrayList<Player> getLobby() {
-        return lobby;
+    
+    public boolean isFull()
+    {
+        return this.numberPlayer == this.maxPlayers;
+    }
+    
+    public ArrayList<Player> getPlayer() {
+        return player;
     }
 
-    /**
-     * @param lobby the lobby to set
-     */
-    public void setLobby(ArrayList<Player> lobby) {
-        this.lobby = lobby;
+    public void setPlayer(ArrayList<Player> player) {
+        this.player = player;
     }
+    
+    public void addPlayer(Player player)
+    {
+        this.player.add(player);
+        this.numberPlayer++;
+    }
+
+    public int getMaxPlayers() {
+        return maxPlayers;
+    }
+
+    public void setMaxPlayers(int maxPlayers) {
+        this.maxPlayers = maxPlayers;
+    }
+    
+
 
     /**
      * @return the numberPlayer
