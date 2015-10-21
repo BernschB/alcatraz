@@ -33,7 +33,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server  {
             {
                 this.lobby.get(i).addPlayer(player);
                 newLobby = false;
-                System.out.print("\nUser " + player.getUsername() + " zur Lobby " + i + " hinzugefügt");
+                System.out.print("\nUser " + player.getUsername() + " wurde zur Lobby " + i + " hinzugefügt");
                 if(this.lobby.get(i).isFull())
                 {
                     System.out.print("\nLobby ist voll");
@@ -52,7 +52,20 @@ public class ServerImpl extends UnicastRemoteObject implements Server  {
 
     @Override
     public void logoutClient(Player player) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        for(int i = 0; i < this.lobby.size(); i++)
+        {
+            for(int j = 0; j < this.lobby.get(i).getNumberPlayer(); j++)
+            {
+                if(this.lobby.get(i).getPlayer().get(j).getUsername().equals(player.getUsername()))
+                {
+                    this.lobby.get(i).removePlayer(player);
+                    System.out.print("\nUser " + player.getUsername() + " wurde aus der Lobby " + i + " gelöscht");
+                    break;
+                }
+            }
+
+        }
+ //       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override

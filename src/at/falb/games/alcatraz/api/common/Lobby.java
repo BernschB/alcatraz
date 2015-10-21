@@ -33,7 +33,7 @@ public class Lobby implements Serializable {
     }
     
     public ArrayList<Player> getPlayer() {
-        return player;
+        return this.player;
     }
 
     public void setPlayer(ArrayList<Player> player) {
@@ -44,6 +44,12 @@ public class Lobby implements Serializable {
     {
         this.player.add(player);
         this.numberPlayer++;
+    }
+    
+    public void removePlayer(Player player)
+    {
+        this.player.remove(player);
+        this.numberPlayer--;
     }
 
     public int getMaxPlayers() {

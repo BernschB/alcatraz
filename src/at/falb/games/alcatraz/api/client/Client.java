@@ -51,12 +51,8 @@ public class Client {
             //setUserName(pl);
             //System.out.print(pl.getUsername());
             s.loginClient(player1);
-            try {
-                sleep(1000);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-            }
             s.loginClient(player2);
+            s.logoutClient(player2);
             //System.out.print(s.loginClient(player1));
             
         } catch (NotBoundException ex) {
