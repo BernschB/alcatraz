@@ -15,21 +15,24 @@ import java.util.ArrayList;
 public class Lobby implements Serializable {
     
     private ArrayList<Player> player = new ArrayList<Player>();
-    private int numberPlayer;
+    private int currentPlayers;
     private int maxPlayers;
+    
+    public Lobby(){}
 
     public Lobby(Player player)
     {
+        this.addPlayer(player);
         this.maxPlayers = player.getMaxPlayers();
-        this.numberPlayer = 1;
+        this.currentPlayers = 1;
     }
     public Lobby(int numberPlayer){
-        this.numberPlayer = numberPlayer;
+        this.currentPlayers = numberPlayer;
     }
     
     public boolean isFull()
     {
-        return this.numberPlayer == this.maxPlayers;
+        return this.currentPlayers == this.maxPlayers;
     }
     
     public ArrayList<Player> getPlayer() {
@@ -43,20 +46,20 @@ public class Lobby implements Serializable {
     public void addPlayer(Player player)
     {
         this.player.add(player);
-        this.numberPlayer++;
+        this.currentPlayers++;
     }
     
     public void removePlayer(Player player)
     {
         this.player.remove(player);
-        this.numberPlayer--;
+        this.currentPlayers--;
     }
 
     public int getMaxPlayers() {
         return maxPlayers;
     }
 
-    public void setMaxPlayers(int maxPlayers) {
+    public void getCurrentPlayers(int maxPlayers) {
         this.maxPlayers = maxPlayers;
     }
     
@@ -65,19 +68,19 @@ public class Lobby implements Serializable {
     /**
      * @return the numberPlayer
      */
-    public int getNumberPlayer() {
-        return numberPlayer;
+    public int getCurrentPlayers() {
+        return currentPlayers;
     }
 
     /**
-     * @param numberPlayer the numberPlayer to set
+     * @param currentPlayers the numberPlayer to set
      */
-    public void setNumberPlayer(int numberPlayer) {
-        this.numberPlayer = numberPlayer;
+    public void setCurrentPlayers(int currentPlayers) {
+        this.currentPlayers = currentPlayers;
     }
     
     public String toString(){
-        return "Diese Lobbie hat " +this.numberPlayer +" Spieler";
+        return "Diese Lobbie hat " +this.currentPlayers +" Spieler";
     }
     
 }

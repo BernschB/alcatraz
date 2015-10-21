@@ -16,16 +16,20 @@ import java.util.ArrayList;
  *
  * @author stefanprinz
  */
-public class ServerImpl extends UnicastRemoteObject implements Server  {
-    
+public class ServerImpl extends UnicastRemoteObject implements Server {
+
     private ArrayList<Lobby> lobby = new ArrayList<Lobby>();
-    
-    public ServerImpl() throws RemoteException{
+
+    public ServerImpl() throws RemoteException {
         super();
     }
-    
+
     @Override
     public void loginClient(Player player) {
+
+        
+        //Insert Multicast here for active replication?
+
         boolean newLobby = true;
         for(int i = 0; i < this.lobby.size(); i++)
         {
@@ -47,17 +51,14 @@ public class ServerImpl extends UnicastRemoteObject implements Server  {
             System.out.println("User " + player.getUsername() + " hat eine neune Lobby angelegt");
             this.lobby.add(new Lobby(player));
         }
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     @Override
     public void logoutClient(Player player) {
-        for(int i = 0; i < this.lobby.size(); i++)
-        {
-            for(int j = 0; j < this.lobby.get(i).getNumberPlayer(); j++)
-            {
-                if(this.lobby.get(i).getPlayer().get(j).getUsername().equals(player.getUsername()))
-                {
+        for (int i = 0; i < this.lobby.size(); i++) {
+            for (int j = 0; j < this.lobby.get(i).getCurrentPlayers(); j++) {
+                if (this.lobby.get(i).getPlayer().get(j).getUsername().equals(player.getUsername())) {
                     this.lobby.get(i).removePlayer(player);
                     System.out.println("User " + player.getUsername() + " wurde aus der Lobby " + i + " gelöscht");
                     break;
@@ -65,7 +66,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server  {
             }
 
         }
- //       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -74,5 +75,5 @@ public class ServerImpl extends UnicastRemoteObject implements Server  {
         System.out.println("Jetzt würde das Spiel starten!");
 //        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }
