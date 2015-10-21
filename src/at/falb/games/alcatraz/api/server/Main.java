@@ -55,7 +55,7 @@ public class Main {
         //Erstellt einen RMI-Registry für RMI Binds auf dem Well known RMI Registry Port (1099). RMI Adressen müssen dann hier Angemeldet werden.
         try{
             System.out.println("Create RMI-Registry...");
-            LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
+            LocateRegistry.createRegistry(Registry.REGISTRY_PORT); 
         } catch  (RemoteException e){
             LOG.info("Could not register Service. " +e.getMessage());
         }

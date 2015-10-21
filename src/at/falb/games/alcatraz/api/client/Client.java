@@ -14,6 +14,7 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 /**
@@ -36,31 +37,32 @@ public class Client {
         System.out.println("Ihr Uername lautet " + username);
     }
     public static void main(String[] args) {
-        Player player1 = new Player();
-        Player player2 = new Player();
-        player1.setID(1);
-        player1.setUsername("Bernsch");
-        player1.setMaxPlayers(3);
         
-        player2.setID(2);
-        player2.setUsername("Prinzi");
-        player2.setMaxPlayers(3);
-        try {
-           // Player pl = (ServerImpl)Naming.lookup("rmi://localhost:1099/Prinzi");
-            Server s = (Server) Naming.lookup("rmi://localhost:1099/Prinzi");
-            //setUserName(pl);
-            //System.out.print(pl.getUsername());
-            s.loginClient(player1);
-            s.loginClient(player2);
-            s.logoutClient(player2);
-            //System.out.print(s.loginClient(player1));
-            
-        } catch (NotBoundException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (RemoteException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        ArrayList<Server> s = new ArrayList<Server>();
+        
+        Player player1 = new Player("Prinzi", 3);
+        Player player2 = new Player("Bernsch", 3);
+        Player player3 = new Player("Swagger", 3);
+                       
+        s = player1.regPlayer();
+        //player2.regPlayer();
+        //player3.regPlayer();
+        //System.out.print(s.loginClient(player1));
+        
+        //ie Clients melden sich bei jedem Server an.
+        for (Server serv : s){
+            try {
+                serv.loginClient(player1);
+                serv.loginClient(player2);
+                serv.loginClient(player3);
+            } catch (RemoteException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-    }    
+        
+    }
+    
+    public void init(Player player){
+        
+    }
 }

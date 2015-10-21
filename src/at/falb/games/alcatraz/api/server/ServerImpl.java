@@ -33,10 +33,10 @@ public class ServerImpl extends UnicastRemoteObject implements Server  {
             {
                 this.lobby.get(i).addPlayer(player);
                 newLobby = false;
-                System.out.print("\nUser " + player.getUsername() + " wurde zur Lobby " + i + " hinzugefügt");
+                System.out.println("User " + player.getUsername() + " wurde zur Lobby " + i + " hinzugefügt");
                 if(this.lobby.get(i).isFull())
                 {
-                    System.out.print("\nLobby ist voll");
+                    System.out.println("Lobby ist voll");
                     startGame(this.lobby.get(i));
                 }
                 break;
@@ -44,7 +44,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server  {
         }
         if(newLobby == true)
         {
-            System.out.print("\nUser " + player.getUsername() + " hat eine neune Lobby angelegt");
+            System.out.println("User " + player.getUsername() + " hat eine neune Lobby angelegt");
             this.lobby.add(new Lobby(player));
         }
 //        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -59,7 +59,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server  {
                 if(this.lobby.get(i).getPlayer().get(j).getUsername().equals(player.getUsername()))
                 {
                     this.lobby.get(i).removePlayer(player);
-                    System.out.print("\nUser " + player.getUsername() + " wurde aus der Lobby " + i + " gelöscht");
+                    System.out.println("User " + player.getUsername() + " wurde aus der Lobby " + i + " gelöscht");
                     break;
                 }
             }
@@ -71,7 +71,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server  {
     @Override
     public void startGame(Lobby lobby) {
         this.lobby.remove(lobby);
-        System.out.print("\nLobby gelöscht");
+        System.out.println("Jetzt würde das Spiel starten!");
 //        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
