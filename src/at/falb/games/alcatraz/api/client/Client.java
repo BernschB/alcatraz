@@ -10,15 +10,8 @@ import at.falb.games.alcatraz.api.common.Server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import static java.lang.Thread.sleep;
-import java.lang.reflect.Array;
-import java.net.MalformedURLException;
-import java.rmi.Naming;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,39 +21,132 @@ import java.util.logging.Logger;
  */
 public class Client {
 
-    private static void setUserName(Player pl) {
-        InputStreamReader isr = new InputStreamReader(System.in);
-        BufferedReader br = new BufferedReader(isr);
-        System.out.print("Bitte geben Sie ihren Usernamen ein: ");
+    
+    // CLI für die erstellung eines Users
+    @SuppressWarnings("empty-statement")
+    private static Player setUserName() {
+        Player player;
+        InputStreamReader isr;
+        BufferedReader br;
+        player = new Player();
+        
         String username = null;
-        try {
-            username = br.readLine();
-        } catch (IOException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        pl.setUsername(username);
-        System.out.println("Ihr Uername lautet " + username);
-    }
+        int maxPlayers = 0;
+        while (username == null);
+        {
+            isr = new InputStreamReader(System.in);
+            br = new BufferedReader(isr);
+            System.out.print("Bitte geben Sie ihren Usernamen ein: ");
 
+            try {
+                username = br.readLine();
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+                
+        while (maxPlayers < 2 && maxPlayers > 4 )
+        {
+            isr = new InputStreamReader(System.in);
+            br = new BufferedReader(isr);
+            System.out.print("Bitte geben Sie die gewünschte Spieleranzahl an 2-4:");
+
+            try {
+                maxPlayers = Integer.parseInt(br.readLine());
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } 
+        player.setUsername(username);
+        player.setMaxPlayers(maxPlayers);
+            
+        System.out.println("Ihr Uername lautet " + username + " und Sie spielen mit " + maxPlayers + " Spielern.");
+        return player;
+        
+        
+
+    }
+    
     public static void main(String[] args) {
 
         ArrayList<Server> s = new ArrayList<Server>();
+        InputStreamReader isr;
+        BufferedReader br;
+        boolean end = false;
+        
+        //Fixer dummy player für die Registry
+        Player dummy;
+        dummy = new Player();
+        
+        Player player = null;
+        
+        s = dummy.regPlayer();
+        
+        int doAction = 0;
+        
+        while (end == false)
+        {
+            System.out.print("Was möchten Sie tun?\n");
+            System.out.print("[1] Neuen User erstellen\n");
+            System.out.print("[2] Aktuellen User Abmelden\n");
+            System.out.print("[3] Programm beenden\n");
+            isr = new InputStreamReader(System.in);
+            br = new BufferedReader(isr);
+            try {
+                doAction = Integer.parseInt(br.readLine());
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            switch(doAction){
+                case 1:
+//                    try {
+//                        s.get(0).logoutClient(player);
+//                    } catch (RemoteException ex) {
+//                        Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+                    player = setUserName();
+
+                    try {
+                        s.get(0).loginClient(player);
+                        System.out.println("Client logged in!");
+                    } catch (RemoteException ex) {
+                        Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    break;
+                case 2:
+                    try {
+                        s.get(0).logoutClient(player);
+                    } catch (RemoteException ex) {
+                        Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    break;
+                case 3:
+                    end = true;
+                    break;                
+                default:
+                    System.out.println("Bitte geben Sie einen gültigen Wert ein");
+
+            }
+        }
         //int loginFlag = 0;
 
-        //Fixer dummy player für die Registry
-        Player dummy = new Player();
-        
+/*
         Player player1 = new Player("Prinzi", 3);
         Player player2 = new Player("Bernsch", 3);
         Player player3 = new Player("Swagger", 3);
+        
+        
+        
+        
 
-        s = dummy.regPlayer();
 
         System.out.println("Clients logged in!");
 
         
         //TODO: Client redet normal fix mit einem der Server. Falls der ausfällt (check durch periodic ping) wechelt er auf den nächsten. All Server sind in der Liste s.
             try {
+                s.get(0).loginClient(player);
                 s.get(0).loginClient(player1);
                 s.get(0).loginClient(player2);
                 s.get(0).loginClient(player3);
@@ -68,7 +154,7 @@ public class Client {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
         
-
+*/
     }
 
     

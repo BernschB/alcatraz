@@ -60,10 +60,11 @@ public class Main {
             LOG.info("Could not register Service. " +e.getMessage());
         }
         
+        
         ServerStart impl1 = new ServerStart("Prinzi", host, 0, spreadGroupName);
         ServerStart impl2 = new ServerStart("Bernschibu", host, 0, spreadGroupName);
         ServerStart impl3 = new ServerStart("MasterOverlordSlayerOfDarkness", host, 0, spreadGroupName);
-
+        
         System.out.println("done");
                
     }

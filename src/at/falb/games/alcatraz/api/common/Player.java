@@ -34,11 +34,16 @@ public class Player implements Serializable {
     }
 
     public Player(String username, int maxPlayers) {
-        this.username = username;
-        this.maxPlayers = maxPlayers;
-        
+        if (maxPlayers > 1 && maxPlayers < 5)
+        {
+            this.username = username;
+            this.maxPlayers = maxPlayers;        
+        }
+        else
+        {
+            Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, "Wrong maxPlayers");
+        }
     }
-
     /**
      * @return the ID
      */

@@ -56,6 +56,10 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
         
     }
 
+    /**
+     *
+     * @param player
+     */
     @Override
     public void logoutClient(Player player) {
         for (int i = 0; i < this.lobby.size(); i++) {
