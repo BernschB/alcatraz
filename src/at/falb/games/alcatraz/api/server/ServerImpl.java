@@ -25,7 +25,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
     }
 
     @Override
-    public void loginClient(Player player) {
+    public int loginClient(Player player) {
 
         
         //Insert Multicast here for active replication?
@@ -51,6 +51,8 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
             System.out.println("User " + player.getUsername() + " hat eine neune Lobby angelegt");
             this.lobby.add(new Lobby(player));
         }
+        
+        return 1;
         
     }
 

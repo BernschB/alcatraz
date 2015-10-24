@@ -97,6 +97,7 @@ public class Player implements Serializable {
     
     public ArrayList<Server> regPlayer(){
         String[] rmis;
+        
 
         //Get all Server RMIs from RMI-Registry 
         //Then bind to all Servers in ArrayList<Server>
@@ -108,7 +109,7 @@ public class Player implements Serializable {
                 System.out.println("Bind to host: " + rmis[i]);
                 s.add((Server) Naming.lookup("rmi://localhost:1099/".concat(rmis[i])));
             }
-            //Server s = (Server)Naming.lookup("rmi://localhost:1099/CalculatorService");
+            
         } catch (RemoteException ex) {
             Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
         } catch (NotBoundException ex) {

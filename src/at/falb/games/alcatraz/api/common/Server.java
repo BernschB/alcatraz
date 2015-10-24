@@ -14,7 +14,7 @@ import java.rmi.RemoteException;
  */
 public interface Server extends Remote {
     
-    public void loginClient(Player player) throws RemoteException;
+    public int loginClient(Player player) throws RemoteException;
 
     public void logoutClient(Player player) throws RemoteException;
         

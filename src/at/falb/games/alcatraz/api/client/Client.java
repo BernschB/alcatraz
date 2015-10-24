@@ -45,6 +45,7 @@ public class Client {
     public static void main(String[] args) {
 
         ArrayList<Server> s = new ArrayList<Server>();
+        //int loginFlag = 0;
 
         //Fixer dummy player für die Registry
         Player dummy = new Player();
@@ -54,20 +55,19 @@ public class Client {
         Player player3 = new Player("Swagger", 3);
 
         s = dummy.regPlayer();
-        //player2.regPlayer();
-        //player3.regPlayer();
-        //System.out.print(s.loginClient(player1));
 
-        //ie Clients melden sich bei jedem Server an.
-        for (Server serv : s) {
+        System.out.println("Clients logged in!");
+
+        
+        //TODO: Client redet normal fix mit einem der Server. Falls der ausfällt (check durch periodic ping) wechelt er auf den nächsten. All Server sind in der Liste s.
             try {
-                serv.loginClient(player1);
-                serv.loginClient(player2);
-                serv.loginClient(player3);
+                s.get(0).loginClient(player1);
+                s.get(0).loginClient(player2);
+                s.get(0).loginClient(player3);
             } catch (RemoteException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
+        
 
     }
 
