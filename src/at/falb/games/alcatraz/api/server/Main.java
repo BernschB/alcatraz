@@ -7,11 +7,13 @@
 package at.falb.games.alcatraz.api.server;
 
 import at.falb.games.alcatraz.api.common.*;
+import java.io.IOException;
 import java.net.UnknownHostException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import spread.SpreadException;
@@ -32,25 +34,14 @@ public class Main {
      * @throws spread.SpreadException
      * @throws java.rmi.RemoteException
      */
-    public static void main(String[] args) throws SpreadException, RemoteException {
+    public static void main(String[] args) throws SpreadException, RemoteException, IOException {
 
+        
+        
         String host = "localhost";
-        String spreadGroupName = "alcatraz-server";
+        String spreadGroupName = "alcatraz-SpreadGroup";
         
         System.out.println("Starting up Server...");
-
-        //Lobbies werden erstellt. Gehört dann in die Impl rein, darum jetzt auskommentiert.
-        
-        /*
-        Lobby lobbyTwo = createLobby(2);
-        Lobby lobbyThree = createLobby(3);
-        Lobby lobbyFour = createLobby(4);
-        
-        LOG.info("Following Lobbies Created:");
-        LOG.info(lobbyTwo.toString());
-        LOG.info(lobbyThree.toString());
-        LOG.info(lobbyFour.toString());
-        */
         
         //Erstellt einen RMI-Registry für RMI Binds auf dem Well known RMI Registry Port (1099). RMI Adressen müssen dann hier Angemeldet werden.
         try{
@@ -61,12 +52,13 @@ public class Main {
         }
         
         
-        ServerStart impl1 = new ServerStart("Prinzi", host, 0, spreadGroupName);
-        ServerStart impl2 = new ServerStart("Bernschibu", host, 0, spreadGroupName);
-        ServerStart impl3 = new ServerStart("MasterOverlordSlayerOfDarkness", host, 0, spreadGroupName);
+        ServerStart impl = new ServerStart("Prinzi", host, 0, spreadGroupName);
+        //ServerStart impl2 = new ServerStart("Bernschibu", host, 0, spreadGroupName);
+        //ServerStart impl3 = new ServerStart("MasterOverlordSlayerOfDarkness", host, 0, spreadGroupName);
         
         System.out.println("done");
                
     }
+    
     
 }
