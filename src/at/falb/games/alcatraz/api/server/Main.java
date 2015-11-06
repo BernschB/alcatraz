@@ -53,8 +53,6 @@ public class Main {
         
         
         ServerStart impl = new ServerStart("Prinzi", host, 0, spreadGroupName);
-        //ServerStart impl2 = new ServerStart("Bernschibu", host, 0, spreadGroupName);
-        //ServerStart impl3 = new ServerStart("MasterOverlordSlayerOfDarkness", host, 0, spreadGroupName);
         
         System.out.println("done");
                

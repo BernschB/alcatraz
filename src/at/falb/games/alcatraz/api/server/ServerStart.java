@@ -17,6 +17,7 @@ import java.net.UnknownHostException;
 import java.rmi.Naming;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -37,6 +38,7 @@ public class ServerStart implements AdvancedMessageListener, Remote, Serializabl
     int numberServers = 0;
     ArrayList<String> serverIPs = new ArrayList<String>();
     Properties props = new Properties();
+    String[] rmis;
 
     //Konstruktor für den Server. 
     //Er bekommt den individuellen Namen jedes Spread-Gruppenmitglieds (also der Server)
@@ -74,12 +76,17 @@ public class ServerStart implements AdvancedMessageListener, Remote, Serializabl
 
         ServerImpl si = new ServerImpl();
 
-        try {
-            Naming.rebind("rmi://localhost:1099/".concat(privateName), si);
-        } catch (RemoteException ex) {
-            Logger.getLogger("Remote Exception is stupid..." + ServerStart.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MalformedURLException ex) {
-            Logger.getLogger("MalformedURL means serious shit" + ServerStart.class.getName()).log(Level.SEVERE, null, ex);
+        
+        //Naming.rebind erfolgt hier auf jedem Server. 
+        for (String ip : serverIPs) {
+            try {
+                Naming.rebind("rmi://" + ip + ":1099/".concat(privateName), si);
+                System.out.println("Bound to " + ip);
+            } catch (RemoteException ex) {
+                continue;
+            } catch (MalformedURLException ex) {
+                Logger.getLogger("MalformedURL means serious shit" + ServerStart.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
         System.out.println("Join to \"" + group.toString() + "\" successful. Startup complete.");
@@ -110,7 +117,7 @@ public class ServerStart implements AdvancedMessageListener, Remote, Serializabl
 
         for (int i = 1; i <= numberServers; i++) {
             serverIPs.add(props.getProperty("server" + i + ".host"));
-            System.out.println("IP vom" +i +". Server = " + serverIPs.get(i-1));
+            System.out.println("IP vom" + i + ". Server = " + serverIPs.get(i - 1));
 
         }
     }

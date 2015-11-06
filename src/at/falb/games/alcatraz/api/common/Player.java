@@ -28,8 +28,6 @@ import java.util.logging.Logger;
  */
 public class Player implements Serializable {
 
-
-
     private int ID;
     private String username;
     private int maxPlayers;
@@ -104,28 +102,27 @@ public class Player implements Serializable {
         this.maxPlayers = maxPlayers;
     }
 
-    public ArrayList<Server> regPlayer(int numberServers, ArrayList<String> serverIPs) throws FileNotFoundException, IOException {
-        String[] rmis;
-
+    public ArrayList<Server> regPlayer(int numberServers, ArrayList<String> serverIPs) throws FileNotFoundException, IOException, NotBoundException {
+        String[] rmis = null;
+        String regIP = "0.0.0.0";
 
         //Get all Server RMIs from RMI-Registry 
+        //If first Registry is not available, go to next
         //Then bind to all Servers in ArrayList<Server>
-        //TODO: Falls serverIP an Stelle 0 nicht erreichbar ist, nimm den nächsten usw.
-        try {
-            rmis = LocateRegistry.getRegistry(serverIPs.get(0)).list();
-            System.out.println("Alle gefundenen RMI-Hosts auf der Registry: " + Arrays.toString(rmis));
-
-            for (int i = 0; i < Array.getLength(rmis); i++) {
-                System.out.println("Bind to host: " + rmis[i]);
-                s.add((Server) Naming.lookup("rmi://"+serverIPs.get(0)+":1099/".concat(rmis[i])));
+        for (String ip : serverIPs) {
+            try {
+                rmis = LocateRegistry.getRegistry(ip).list();
+                System.out.println("Alle gefundenen RMI-Hosts auf der Registry: " + Arrays.toString(rmis));
+                regIP = ip;
+                break;
+            } catch (RemoteException ex) {
+                continue;
             }
-
-        } catch (RemoteException ex) {
-            Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NotBoundException ex) {
-            Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        for (int i = 0; i < Array.getLength(rmis); i++){
+            System.out.println("Bind to host:" +rmis[i]);
+            s.add((Server) Naming.lookup("rmi://" + regIP + ":1099/".concat(rmis[i])));
         }
 
         return s;
@@ -133,6 +130,4 @@ public class Player implements Serializable {
     }
 
     //Erlernt dynamisch, wieviele Serveres gibt und welche IP diese haben.
-  
-
 }

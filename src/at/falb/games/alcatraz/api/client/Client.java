@@ -8,9 +8,11 @@ package at.falb.games.alcatraz.api.client;
 import at.falb.games.alcatraz.api.common.Player;
 import at.falb.games.alcatraz.api.common.Server;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -90,7 +92,13 @@ public class Client {
 
         Player player = null;
 
-        s = dummy.regPlayer(numberServers, serverIPs);
+        try {
+            s = dummy.regPlayer(numberServers, serverIPs);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NotBoundException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         int doAction = 0;
 
@@ -133,32 +141,7 @@ public class Client {
 
             }
         }
-        //int loginFlag = 0;
-
-        /*
-         Player player1 = new Player("Prinzi", 3);
-         Player player2 = new Player("Bernsch", 3);
-         Player player3 = new Player("Swagger", 3);
         
-        
-        
-        
-
-
-         System.out.println("Clients logged in!");
-
-        
-         //TODO: Client redet normal fix mit einem der Server. Falls der ausfällt (check durch periodic ping) wechelt er auf den nächsten. All Server sind in der Liste s.
-         try {
-         s.get(0).loginClient(player);
-         s.get(0).loginClient(player1);
-         s.get(0).loginClient(player2);
-         s.get(0).loginClient(player3);
-         } catch (RemoteException ex) {
-         Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-         }
-        
-         */
     }
 
     public void setServerProperties() {
