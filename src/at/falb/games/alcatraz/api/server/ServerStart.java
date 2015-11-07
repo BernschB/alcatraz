@@ -37,6 +37,7 @@ public class ServerStart implements AdvancedMessageListener, Remote, Serializabl
 
     private final static Logger LOG = Logger.getLogger(ServerStart.class.getName());
     int numberServers = 0;
+    private ArrayList<Lobby> lobby = new ArrayList<Lobby>();
     ArrayList<String> serverIPs = new ArrayList<String>();
     Properties props = new Properties();
     String[] rmis;
@@ -138,19 +139,14 @@ public class ServerStart implements AdvancedMessageListener, Remote, Serializabl
 
             if (whichClass.contains("Player")) {
                 Player player = (Player) sm.getObject();
-                if (player.getUsername().contains("Login")) {
-                    si.realLogin(player);
+                if (player.getUsername().startsWith("Login")) {
+                    lobby = si.realLogin(player, lobby);
+                } else if (player.getUsername().startsWith("Logout")) {
+                    lobby = si.realLogout(player, lobby);
+
                 }
             }
 
-            /*try {
-             lob = (Lobby) sm.getObject();
-             System.out.println(lob.toString());
-             System.out.println(lob.getPlayer());
-            
-             } catch (SpreadException ex) {
-             Logger.getLogger(ServerStart.class.getName()).log(Level.SEVERE, null, ex);
-             }*/
         } catch (SpreadException ex) {
             Logger.getLogger(ServerStart.class.getName()).log(Level.SEVERE, null, ex);
         } catch (FileNotFoundException ex) {

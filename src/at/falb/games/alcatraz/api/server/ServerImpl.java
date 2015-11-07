@@ -49,25 +49,6 @@ public class ServerImpl extends UnicastRemoteObject implements Server, AdvancedM
         props.load(reader);
         spreadGroupName = props.getProperty("group.name");
 
-        System.out.println("Joining the Spread Group \"" + spreadGroupName + "\"");
-
-        //Verbindet sich zu dem Spread Deamon, der auf jedem Server lokal laufen muss (sonst single point of failure)
-        /*try {
-         con.add(this);
-         con.connect(InetAddress.getByName(host), Port, privateName, false, true); //der 4. Parameter ist für priority connections da, der vierte für GroupMembership.
-         } catch (SpreadException e) {
-         System.err.println("Spread Connection couldn't be established: " + e.getMessage().toString());
-         } catch (UnknownHostException ex) {
-         Logger.getLogger("Unknown Host is unknown..." + ServerStart.class.getName()).log(Level.SEVERE, null, ex);
-         }
-
-         SpreadGroup group = new SpreadGroup();
-
-         try {
-         group.join(con, spreadGroupName);
-         } catch (SpreadException e) {
-         LOG.info("Could not join Spread Group: " + e.getMessage().toString());
-         }*/
     }
 
     @Override
@@ -85,65 +66,70 @@ public class ServerImpl extends UnicastRemoteObject implements Server, AdvancedM
     }
 
     //Wird aufgerufen, nachdem ein Server eine Join nachricht erhalten hat (auch von sich selbst).
-    protected int realLogin(Player player) {
-        System.out.println("The real login Process will be done here!");
+    protected ArrayList<Lobby> realLogin(Player player, ArrayList<Lobby> lob) {
+        lobby = lob;
         player.setUsername(player.getUsername().substring(5));
-                //TODO: Insert Multicast for active replication
-        /*SpreadMessage message = new SpreadMessage();
-         try {
-         message.setObject(player);
-         } catch (SpreadException ex) {
-         Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
-         }
-         message.addGroup(spreadGroupName);
-         message.setReliable();
-        
-         try {
-         con.multicast(message);
-         } catch (SpreadException e) {
-         LOG.info("Could not join Spread Group: " + e.getMessage().toString());
-         }
-         */
 
         boolean newLobby = true;
-        for (int i = 0; i < this.lobby.size(); i++) {
-            if (this.lobby.get(i).getMaxPlayers() == player.getMaxPlayers()) {
-                this.lobby.get(i).addPlayer(player);
+
+
+        for (Lobby l : lobby) {
+            System.out.println("Diese Lobby hat max: " + l.getMaxPlayers() + " Spieler");
+            if (l.getMaxPlayers() == player.getMaxPlayers()) {
+                l.addPlayer(player);
                 newLobby = false;
-                System.out.println("User " + player.getUsername() + " wurde zur Lobby " + i + " hinzugefügt");
-                if (this.lobby.get(i).isFull()) {
+                System.out.println("User " + player.getUsername() + " wurde zur Lobby hinzugefügt");
+                if (l.isFull()) {
                     System.out.println("Lobby ist voll");
-                    startGame(this.lobby.get(i));
+                    startGame(l);
                 }
                 break;
             }
         }
+
         if (newLobby == true) {
             System.out.println("User " + player.getUsername() + " hat eine neune Lobby angelegt");
-            this.lobby.add(new Lobby(player));
+            lobby.add(new Lobby(player));
         }
 
-        return 1;
+        for (Lobby l : lobby) {
+            System.out.println("Aktuelle Spieler: " +l.getCurrentPlayers());
+        }
 
+        return lobby;
     }
 
+    
     /**
      *
      * @param player
      */
     @Override
     public void logoutClient(Player player) {
-        for (int i = 0; i < this.lobby.size(); i++) {
-            for (int j = 0; j < this.lobby.get(i).getCurrentPlayers(); j++) {
-                if (this.lobby.get(i).getPlayer().equals(player.getUsername())) {
-                    this.lobby.get(i).removePlayer(player);
-                    System.out.println("User " + player.getUsername() + " wurde aus der Lobby " + i + " gelöscht");
-                    break;
-                }
-            }
-
+        try {
+            this.sendLogoutMessage(player);
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SpreadException ex) {
+            Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
-        //       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    protected ArrayList<Lobby> realLogout(Player player, ArrayList<Lobby> lob) {
+        lobby = lob;
+        for (Lobby l : lobby){
+            if (l.getMaxPlayers() == player.getMaxPlayers()){
+                l.removePlayer(player);
+                System.out.println("User " + player.getUsername() + " wurde aus der Lobby gelöscht");
+                break;
+            }
+        }
+
+        for (Lobby l : lobby) {
+            System.out.println("Current Players in Lobby: " + l.getCurrentPlayers());
+        }
+        
+        return lobby;
     }
 
     @Override
@@ -174,6 +160,23 @@ public class ServerImpl extends UnicastRemoteObject implements Server, AdvancedM
         //System.out.println("SendLoginMessage noch nicht supported");
         SpreadMessage message = new SpreadMessage();
         player.setUsername("Login".concat(player.getUsername()));
+        message.setObject(player);
+        message.addGroup(spreadGroupName);
+        message.setReliable();
+        try {
+            System.out.println("Message wird gesendet an Gruppe :" + spreadGroupName);
+            c.multicast(message);
+        } catch (SpreadException e) {
+            System.err.println("Could not Send Message: " + e.getMessage().toString());
+        }
+
+    }
+
+    public void sendLogoutMessage(Player player) throws UnknownHostException, SpreadException {
+
+        //System.out.println("SendLoginMessage noch nicht supported");
+        SpreadMessage message = new SpreadMessage();
+        player.setUsername("Logout".concat(player.getUsername()));
         message.setObject(player);
         message.addGroup(spreadGroupName);
         message.setReliable();

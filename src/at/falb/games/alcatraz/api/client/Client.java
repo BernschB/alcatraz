@@ -103,7 +103,7 @@ public class Client {
         int doAction = 0;
 
         while (end == false) {
-            /*
+            
              System.out.print("Was möchten Sie tun?\n");
              System.out.print("[1] Neuen User erstellen\n");
              System.out.print("[2] Aktuellen User Abmelden\n");
@@ -115,20 +115,19 @@ public class Client {
              } catch (IOException ex) {
              Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
              }
-             */
+             
             
             //Next line for debugging
-            doAction = 1;
+            //doAction = 1;
 
             switch (doAction) {
                 case 1:
                     player.setUsername("Hans Christian Orschloch");
+                    player.setMaxPlayers(4);
 
                     try {
                         s.get(0).loginClient(player);
                         System.out.println("Client logged in!");
-                        //Next line for debugging
-                        end = true;
                         
                     } catch (RemoteException ex) {
                         Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
@@ -137,6 +136,7 @@ public class Client {
                 case 2:
                     try {
                         s.get(0).logoutClient(player);
+                        System.out.println("Client logged out");
                     } catch (RemoteException ex) {
                         Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                     }

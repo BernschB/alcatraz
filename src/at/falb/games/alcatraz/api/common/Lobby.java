@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class Lobby implements Serializable {
 
     private ArrayList<Player> player = new ArrayList<Player>();
-    private int currentPlayers;
+    private int currentPlayers = 0;
     private int maxPlayers;
 
     public Lobby() {
@@ -24,7 +24,6 @@ public class Lobby implements Serializable {
     public Lobby(Player player) {
         this.addPlayer(player);
         this.maxPlayers = player.getMaxPlayers();
-        this.currentPlayers = 1;
     }
 
     public Lobby(int numberPlayer) {
@@ -44,9 +43,6 @@ public class Lobby implements Serializable {
         return string;
     }
 
-    public void setPlayer(ArrayList<Player> player) {
-        this.player = player;
-    }
 
     public void addPlayer(Player player) {
         this.player.add(player);
