@@ -8,6 +8,7 @@ package at.falb.games.alcatraz.api.server;
 import at.falb.games.alcatraz.api.common.Lobby;
 import at.falb.games.alcatraz.api.common.Player;
 import at.falb.games.alcatraz.api.common.Server;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
@@ -39,6 +40,7 @@ public class ServerStart implements AdvancedMessageListener, Remote, Serializabl
     ArrayList<String> serverIPs = new ArrayList<String>();
     Properties props = new Properties();
     String[] rmis;
+    SpreadConnection c = new SpreadConnection();
 
     //Konstruktor für den Server. 
     //Er bekommt den individuellen Namen jedes Spread-Gruppenmitglieds (also der Server)
@@ -53,7 +55,6 @@ public class ServerStart implements AdvancedMessageListener, Remote, Serializabl
         setServerProperties();
 
         SpreadConnection con = new SpreadConnection();
-
         System.out.println("Joining the Spread Group \"" + spreadGroupName + "\"");
 
         //Verbindet sich zu dem Spread Deamon, der auf jedem Server lokal laufen muss (sonst single point of failure)
@@ -74,9 +75,8 @@ public class ServerStart implements AdvancedMessageListener, Remote, Serializabl
             LOG.info("Could not join Spread Group: " + e.getMessage().toString());
         }
 
-        ServerImpl si = new ServerImpl();
+        ServerImpl si = new ServerImpl(con);
 
-        
         //Naming.rebind erfolgt hier auf jedem Server. 
         for (String ip : serverIPs) {
             try {
@@ -91,14 +91,18 @@ public class ServerStart implements AdvancedMessageListener, Remote, Serializabl
 
         System.out.println("Join to \"" + group.toString() + "\" successful. Startup complete.");
 
-        //Spread Message
-        Player player = new Player();
-        player.setID(5);
-        player.setRMI("rmi://shiiieeet");
-        player.setUsername("Phteven");
+        //********************** TEST LOBBY UND PLAYER FÜR MULTICATING **************************
+        //Test Lobby zum Synchen
+        //Player die Lobby Beitreten
+        Player phteven = new Player();
+        phteven.setID(0);
+        phteven.setRMI("rmi://shiiieeet");
+        phteven.setUsername("Phteven");
+
+        System.out.println(phteven.toString());
 
         SpreadMessage message = new SpreadMessage();
-        message.setObject(player);
+        message.setObject(phteven);
         message.addGroup(spreadGroupName);
         message.setReliable();
 
@@ -108,6 +112,7 @@ public class ServerStart implements AdvancedMessageListener, Remote, Serializabl
             LOG.info("Could not join Spread Group: " + e.getMessage().toString());
         }
 
+        //******************************** ENDE DES TESTBLOCKS ************************************
     }
 
     //Erlernt dynamisch, wieviele Serveres gibt und welche IP diese haben.
@@ -125,13 +130,39 @@ public class ServerStart implements AdvancedMessageListener, Remote, Serializabl
     //--------------AdvancedMessageListenerMethoden--------------------
     @Override
     public void regularMessageReceived(SpreadMessage sm) {
-        System.out.println("New message from " + sm.getSender());
+        try {
+            System.out.println("New message from " + sm.getSender());
+            System.out.println(sm.getObject().toString());
+            String whichClass = sm.getObject().getClass().toString();
+            ServerImpl si = new ServerImpl();
+
+            if (whichClass.contains("Player")) {
+                Player player = (Player) sm.getObject();
+                if (player.getUsername().contains("Login")) {
+                    si.realLogin(player);
+                }
+            }
+
+            /*try {
+             lob = (Lobby) sm.getObject();
+             System.out.println(lob.toString());
+             System.out.println(lob.getPlayer());
+            
+             } catch (SpreadException ex) {
+             Logger.getLogger(ServerStart.class.getName()).log(Level.SEVERE, null, ex);
+             }*/
+        } catch (SpreadException ex) {
+            Logger.getLogger(ServerStart.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(ServerStart.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(ServerStart.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override
     public void membershipMessageReceived(SpreadMessage sm) {
         //throw new UnsupportedOperationException("membershipMessageReceived: Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-
         System.out.println("New membership message from " + sm.getMembershipInfo().getGroup());
     }
 

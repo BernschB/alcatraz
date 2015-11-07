@@ -101,6 +101,10 @@ public class Player implements Serializable {
     public void setMaxPlayers(int maxPlayers) {
         this.maxPlayers = maxPlayers;
     }
+    
+    public String toString(){
+        return "Spielername: " +this.getUsername();
+    }
 
     public ArrayList<Server> regPlayer(int numberServers, ArrayList<String> serverIPs) throws FileNotFoundException, IOException, NotBoundException {
         String[] rmis = null;

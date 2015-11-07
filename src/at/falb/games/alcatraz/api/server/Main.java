@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package at.falb.games.alcatraz.api.server;
 
 import at.falb.games.alcatraz.api.common.*;
@@ -22,13 +21,11 @@ import spread.SpreadException;
  *
  * @author stefanprinz
  */
-
 //Todo: Write Configuration File for Servers. Example located in docs/. Finally located in ???
 public class Main {
-    
-    private final static Logger LOG = Logger.getLogger(Main.class.getName()); 
 
-    
+    private final static Logger LOG = Logger.getLogger(Main.class.getName());
+
     /**
      * @param args the command line arguments
      * @throws spread.SpreadException
@@ -36,27 +33,24 @@ public class Main {
      */
     public static void main(String[] args) throws SpreadException, RemoteException, IOException {
 
-        
-        
         String host = "localhost";
         String spreadGroupName = "alcatraz-SpreadGroup";
-        
+
         System.out.println("Starting up Server...");
-        
+
         //Erstellt einen RMI-Registry für RMI Binds auf dem Well known RMI Registry Port (1099). RMI Adressen müssen dann hier Angemeldet werden.
-        try{
+        try {
             System.out.println("Create RMI-Registry...");
-            LocateRegistry.createRegistry(Registry.REGISTRY_PORT); 
-        } catch  (RemoteException e){
-            LOG.info("Could not register Service. " +e.getMessage());
+            LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
+        } catch (RemoteException e) {
+            LOG.info("Could not register Service. " + e.getMessage());
         }
-        
-        
+
         ServerStart impl = new ServerStart("Prinzi", host, 0, spreadGroupName);
-        
+        ServerStart impl2 = new ServerStart("Bernsch", host, 0, spreadGroupName);
+
         System.out.println("done");
-               
+
     }
-    
-    
+
 }

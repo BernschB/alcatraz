@@ -90,7 +90,7 @@ public class Client {
         Player dummy;
         dummy = new Player();
 
-        Player player = null;
+        Player player = new Player();
 
         try {
             s = dummy.regPlayer(numberServers, serverIPs);
@@ -103,25 +103,33 @@ public class Client {
         int doAction = 0;
 
         while (end == false) {
-            System.out.print("Was möchten Sie tun?\n");
-            System.out.print("[1] Neuen User erstellen\n");
-            System.out.print("[2] Aktuellen User Abmelden\n");
-            System.out.print("[3] Programm beenden\n");
-            isr = new InputStreamReader(System.in);
-            br = new BufferedReader(isr);
-            try {
-                doAction = Integer.parseInt(br.readLine());
-            } catch (IOException ex) {
-                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            /*
+             System.out.print("Was möchten Sie tun?\n");
+             System.out.print("[1] Neuen User erstellen\n");
+             System.out.print("[2] Aktuellen User Abmelden\n");
+             System.out.print("[3] Programm beenden\n");
+             isr = new InputStreamReader(System.in);
+             br = new BufferedReader(isr);
+             try {
+             doAction = Integer.parseInt(br.readLine());
+             } catch (IOException ex) {
+             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+             }
+             */
+            
+            //Next line for debugging
+            doAction = 1;
 
             switch (doAction) {
                 case 1:
-                    player = setUserName();
+                    player.setUsername("Hans Christian Orschloch");
 
                     try {
                         s.get(0).loginClient(player);
                         System.out.println("Client logged in!");
+                        //Next line for debugging
+                        end = true;
+                        
                     } catch (RemoteException ex) {
                         Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -141,7 +149,7 @@ public class Client {
 
             }
         }
-        
+
     }
 
     public void setServerProperties() {

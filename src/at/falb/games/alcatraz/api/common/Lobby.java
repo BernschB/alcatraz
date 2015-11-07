@@ -13,44 +13,47 @@ import java.util.ArrayList;
  * @author stefanprinz
  */
 public class Lobby implements Serializable {
-    
+
     private ArrayList<Player> player = new ArrayList<Player>();
     private int currentPlayers;
     private int maxPlayers;
-    
-    public Lobby(){}
 
-    public Lobby(Player player)
-    {
+    public Lobby() {
+    }
+
+    public Lobby(Player player) {
         this.addPlayer(player);
         this.maxPlayers = player.getMaxPlayers();
         this.currentPlayers = 1;
     }
-    public Lobby(int numberPlayer){
+
+    public Lobby(int numberPlayer) {
         this.currentPlayers = numberPlayer;
     }
-    
-    public boolean isFull()
-    {
+
+    public boolean isFull() {
         return this.currentPlayers == this.maxPlayers;
     }
-    
-    public ArrayList<Player> getPlayer() {
-        return this.player;
+
+    public String getPlayer() {
+        String string = "";
+        for (Player pl : player) {
+            string = string.concat(pl.getUsername()) + " ";
+        }
+        System.out.println(string);
+        return string;
     }
 
     public void setPlayer(ArrayList<Player> player) {
         this.player = player;
     }
-    
-    public void addPlayer(Player player)
-    {
+
+    public void addPlayer(Player player) {
         this.player.add(player);
         this.currentPlayers++;
     }
-    
-    public void removePlayer(Player player)
-    {
+
+    public void removePlayer(Player player) {
         this.player.remove(player);
         this.currentPlayers--;
     }
@@ -60,10 +63,8 @@ public class Lobby implements Serializable {
     }
 
     public void getCurrentPlayers(int maxPlayers) {
-        this.maxPlayers = maxPlayers;
+        this.setMaxPlayers(maxPlayers);
     }
-    
-
 
     /**
      * @return the numberPlayer
@@ -78,9 +79,16 @@ public class Lobby implements Serializable {
     public void setCurrentPlayers(int currentPlayers) {
         this.currentPlayers = currentPlayers;
     }
-    
-    public String toString(){
-        return "Diese Lobbie hat " +this.currentPlayers +" Spieler";
+
+    public String toString() {
+        return "Diese Lobbie hat " + this.currentPlayers + " Spieler";
     }
-    
+
+    /**
+     * @param maxPlayers the maxPlayers to set
+     */
+    public void setMaxPlayers(int maxPlayers) {
+        this.maxPlayers = maxPlayers;
+    }
+
 }
