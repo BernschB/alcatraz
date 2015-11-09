@@ -127,7 +127,11 @@ public class Player implements Serializable {
         
         for (int i = 0; i < Array.getLength(rmis); i++){
             System.out.println("Bind to host:" +rmis[i]);
+            try {
             s.add((ServerInterface) Naming.lookup("rmi://" + regIP + ":1099/".concat(rmis[i])));
+            } catch (RemoteException ex){
+                System.out.println("Whoppalaaa, namin.lookup shit. " +ex);
+            }
         }
 
         return s;

@@ -196,6 +196,7 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
         
         for (Player p : pl){
             rmi = p.getRMI();
+            System.out.println(rmi);
             ci.add((ClientInterface) Naming.lookup(rmi));
         }
         

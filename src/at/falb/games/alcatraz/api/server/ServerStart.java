@@ -26,6 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import spread.AdvancedMessageListener;
 import spread.SpreadConnection;
+
 import spread.SpreadException;
 import spread.SpreadGroup;
 import spread.SpreadMessage;
@@ -85,7 +86,7 @@ public class ServerStart implements AdvancedMessageListener, Remote, Serializabl
                 Naming.rebind("rmi://" + ip + ":1099/".concat(privateName), si);
                 System.out.println("Bound to " + ip);
             } catch (RemoteException ex) {
-                continue;
+                System.err.println("Coudldn't bind to " +ip);
             } catch (MalformedURLException ex) {
                 Logger.getLogger("MalformedURL means serious shit" + ServerStart.class.getName()).log(Level.SEVERE, null, ex);
             }
