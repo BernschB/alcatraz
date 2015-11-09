@@ -5,6 +5,7 @@
  */
 package at.falb.games.alcatraz.api.common;
 
+import at.falb.games.alcatraz.api.server.ServerImpl;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -32,7 +33,7 @@ public class Player implements Serializable {
     private String username;
     private int maxPlayers;
     private String RMI;     //Hätte mir gedacht, die RMI der Clients wird ihnen vom Server übergeben. Also die Clients binden sich nicht selbst, sondern bekommen zur Laufzeit von den Servern eine RMI Adresse zugewisesn.
-    ArrayList<Server> s = new ArrayList<Server>();
+    ArrayList<ServerInterface> s = new ArrayList<ServerInterface>();
 
     public Player() {
     }
@@ -106,7 +107,7 @@ public class Player implements Serializable {
         return "Spielername: " +this.getUsername();
     }
 
-    public ArrayList<Server> regPlayer(int numberServers, ArrayList<String> serverIPs) throws FileNotFoundException, IOException, NotBoundException {
+    public ArrayList<ServerInterface> regPlayer(int numberServers, ArrayList<String> serverIPs) throws FileNotFoundException, IOException, NotBoundException {
         String[] rmis = null;
         String regIP = "0.0.0.0";
 
@@ -126,11 +127,34 @@ public class Player implements Serializable {
         
         for (int i = 0; i < Array.getLength(rmis); i++){
             System.out.println("Bind to host:" +rmis[i]);
-            s.add((Server) Naming.lookup("rmi://" + regIP + ":1099/".concat(rmis[i])));
+            s.add((ServerInterface) Naming.lookup("rmi://" + regIP + ":1099/".concat(rmis[i])));
         }
 
         return s;
 
+    }
+    
+    public void regMyRMI(){
+        String rmi = this.getRMI();
+        ServerImpl si = null;
+        try {
+            si = new ServerImpl();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        for (ServerInterface sInt : s){
+            try {
+                Naming.rebind(rmi, si);
+            } catch (RemoteException ex) {
+                System.out.println("Jez happats");
+            } catch (MalformedURLException ex) {
+                System.out.println("Jez happats");
+            }
+        
+        }
     }
 
     //Erlernt dynamisch, wieviele Serveres gibt und welche IP diese haben.

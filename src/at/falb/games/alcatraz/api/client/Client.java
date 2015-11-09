@@ -5,8 +5,10 @@
  */
 package at.falb.games.alcatraz.api.client;
 
+import at.falb.games.alcatraz.api.common.ClientInterface;
+import at.falb.games.alcatraz.api.common.Lobby;
 import at.falb.games.alcatraz.api.common.Player;
-import at.falb.games.alcatraz.api.common.Server;
+import at.falb.games.alcatraz.api.common.ServerInterface;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -23,7 +25,7 @@ import java.util.logging.Logger;
  *
  * @author HTM_Campus
  */
-public class Client {
+public class Client implements ClientInterface {
 
     Properties props = new Properties();
     static int numberServers = 0;
@@ -73,7 +75,7 @@ public class Client {
 
     public static void main(String[] args) throws IOException {
 
-        ArrayList<Server> s = new ArrayList<Server>();
+        ArrayList<ServerInterface> s = new ArrayList<ServerInterface>();
         InputStreamReader isr;
         BufferedReader br;
         boolean end = false;
@@ -99,41 +101,61 @@ public class Client {
         } catch (NotBoundException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
 
         int doAction = 0;
 
         while (end == false) {
-            
-             System.out.print("Was möchten Sie tun?\n");
-             System.out.print("[1] Neuen User erstellen\n");
-             System.out.print("[2] Aktuellen User Abmelden\n");
-             System.out.print("[3] Programm beenden\n");
-             isr = new InputStreamReader(System.in);
-             br = new BufferedReader(isr);
-             try {
-             doAction = Integer.parseInt(br.readLine());
-             } catch (IOException ex) {
-             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-             }
-             
-            
+
+            System.out.println("Was möchten Sie tun?");
+            System.out.println("[1] Neuen User erstellen");
+            System.out.println("[2] Aktuellen User Abmelden");
+            System.out.println("[3] Programm beenden");
+            isr = new InputStreamReader(System.in);
+            br = new BufferedReader(isr);
+            try {
+                doAction = Integer.parseInt(br.readLine());
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
             //Next line for debugging
             //doAction = 1;
-
             switch (doAction) {
                 case 1:
-                    player.setUsername("Hans Christian Orschloch");
-                    player.setMaxPlayers(4);
+                    System.out.println("Geben Sie ihren Usernamen ein!");
+                    isr = new InputStreamReader(System.in);
+                    br = new BufferedReader(isr);
+
+                    player.setUsername(br.readLine());
+                    
+                    System.out.println("Geben Sie ihre maximale Spielerzahl ein!");
+                    isr = new InputStreamReader(System.in);
+                    br = new BufferedReader(isr);
+                    
+                    player.setMaxPlayers(Integer.parseInt(br.readLine()));
+                    
+                    player.setRMI("rmi://localhost:10099".concat(player.getUsername()));
+                    
+                    player.regMyRMI();
+                    
 
                     try {
-                        s.get(0).loginClient(player);
-                        System.out.println("Client logged in!");
-                        
+                        System.out.println(s.get(0).loginClient(player));
                     } catch (RemoteException ex) {
                         Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     break;
                 case 2:
+                    System.out.println("Geben Sie ihren Usernamen ein!");
+                    isr = new InputStreamReader(System.in);
+                    br = new BufferedReader(isr);
+
+                    player.setMaxPlayers(4);
+                    player.setUsername(br.readLine());
+                    player.setRMI("rmi://localhost:10099".concat(player.getUsername()));
+                    //player.setMaxPlayers(4);
+
                     try {
                         s.get(0).logoutClient(player);
                         System.out.println("Client logged out");
@@ -161,6 +183,12 @@ public class Client {
             System.out.println("IP vom" + i + ". Server = " + serverIPs.get(i - 1));
 
         }
+    }
+
+    @Override
+    public int gameStart(Lobby lobby) throws RemoteException {
+        System.out.println("Jetzt startet das Spiel!!! whuuuhh");
+        return 0;
     }
 
 }

@@ -5,9 +5,10 @@
  */
 package at.falb.games.alcatraz.api.server;
 
+import at.falb.games.alcatraz.api.common.ClientInterface;
 import at.falb.games.alcatraz.api.common.Lobby;
 import at.falb.games.alcatraz.api.common.Player;
-import at.falb.games.alcatraz.api.common.Server;
+import at.falb.games.alcatraz.api.common.ServerInterface;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -31,7 +32,7 @@ import spread.SpreadMessage;
  *
  * @author stefanprinz
  */
-public class ServerImpl extends UnicastRemoteObject implements Server, AdvancedMessageListener, Remote, Serializable {
+public class ServerImpl extends UnicastRemoteObject implements ServerInterface, AdvancedMessageListener, Remote, Serializable {
 
     private ArrayList<Lobby> lobby = new ArrayList<Lobby>();
     Properties props = new Properties();
@@ -68,20 +69,27 @@ public class ServerImpl extends UnicastRemoteObject implements Server, AdvancedM
     //Wird aufgerufen, nachdem ein Server eine Join nachricht erhalten hat (auch von sich selbst).
     protected ArrayList<Lobby> realLogin(Player player, ArrayList<Lobby> lob) {
         lobby = lob;
-        player.setUsername(player.getUsername().substring(5));
 
         boolean newLobby = true;
 
-
         for (Lobby l : lobby) {
-            System.out.println("Diese Lobby hat max: " + l.getMaxPlayers() + " Spieler");
             if (l.getMaxPlayers() == player.getMaxPlayers()) {
+                //Überprüft ob es in der Lobby schon einen Spieler mit dem Namen gibt
+                if(l.getSpecificPlayer(player) == -1){
+                    System.out.println("Der Spielername existiert schon!");
+                    return lobby;
+                }    
+                player.setID(l.getCurrentPlayers());
                 l.addPlayer(player);
                 newLobby = false;
                 System.out.println("User " + player.getUsername() + " wurde zur Lobby hinzugefügt");
                 if (l.isFull()) {
-                    System.out.println("Lobby ist voll");
-                    startGame(l);
+                    System.out.println("Lobby ist jetzt voll");
+                    try {
+                        startGame(l);
+                    } catch (RemoteException ex) {
+                        Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
                 break;
             }
@@ -89,17 +97,17 @@ public class ServerImpl extends UnicastRemoteObject implements Server, AdvancedM
 
         if (newLobby == true) {
             System.out.println("User " + player.getUsername() + " hat eine neune Lobby angelegt");
+            player.setID(0);
             lobby.add(new Lobby(player));
         }
 
         for (Lobby l : lobby) {
-            System.out.println("Aktuelle Spieler: " +l.getCurrentPlayers());
+            System.out.println("Aktuelle Spieler: " + l.getCurrentPlayers());
         }
 
         return lobby;
     }
 
-    
     /**
      *
      * @param player
@@ -116,38 +124,24 @@ public class ServerImpl extends UnicastRemoteObject implements Server, AdvancedM
     }
 
     protected ArrayList<Lobby> realLogout(Player player, ArrayList<Lobby> lob) {
+        
         lobby = lob;
-        for (Lobby l : lobby){
-            if (l.getMaxPlayers() == player.getMaxPlayers()){
+        
+        for (Lobby l : lobby) {
+            if (l.getMaxPlayers() == player.getMaxPlayers()) {
                 l.removePlayer(player);
                 System.out.println("User " + player.getUsername() + " wurde aus der Lobby gelöscht");
-                break;
+                return lobby;
             }
         }
-
-        for (Lobby l : lobby) {
-            System.out.println("Current Players in Lobby: " + l.getCurrentPlayers());
-        }
-        
         return lobby;
     }
 
-    @Override
-    public void startGame(Lobby lobby) {
-        this.lobby.remove(lobby);
-        System.out.println("Jetzt würde das Spiel starten!");
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+
 
     @Override
     public void regularMessageReceived(SpreadMessage sm) {
-        try {
-            System.out.println("New message from " + sm.getSender());
-            System.out.println(sm.getObject().toString());
-
-        } catch (SpreadException ex) {
-            Logger.getLogger(ServerStart.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        System.out.println("RegularMessageReceived in ServerImpl... which is weird");
     }
 
     @Override
@@ -187,6 +181,15 @@ public class ServerImpl extends UnicastRemoteObject implements Server, AdvancedM
             System.err.println("Could not Send Message: " + e.getMessage().toString());
         }
 
+    }
+
+    public void startGame(Lobby lob) throws RemoteException {
+        ArrayList<Player> pl = new ArrayList(lob.getListOfPlayers());
+        ArrayList<ClientInterface> s = new ArrayList<ClientInterface>();
+
+        for (Player p : pl){
+            p.getRMI();
+        }
     }
 
 }

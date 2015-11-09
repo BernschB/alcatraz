@@ -37,29 +37,40 @@ public class Lobby implements Serializable {
     public String getPlayer() {
         String string = "";
         for (Player pl : player) {
-            string = string.concat(pl.getUsername()) + " ";
+            string = string.concat(pl.getUsername() + " mit ID: " + pl.getID() + "    ");
         }
         System.out.println(string);
         return string;
     }
 
-
-    public void addPlayer(Player player) {
-        this.player.add(player);
-        this.currentPlayers++;
+    public void addPlayer(Player pl) {
+        player.add(pl);
+        currentPlayers++;
+        for (Player p : player) {
+            System.out.println(p.getUsername() + " mit ID: " + p.getID() + "    ");
+        }
     }
 
-    public void removePlayer(Player player) {
-        this.player.remove(player);
-        this.currentPlayers--;
+    public void removePlayer(Player pl) {
+        
+        ArrayList<Player> copy = new ArrayList<Player>(player);
+
+        for (Player p : player) {
+            if (p.getUsername().equals(pl.getUsername())) {
+                copy.remove(p);
+                break;
+            }
+        }
+        player = copy;
+
+        currentPlayers--;
+        for (Player p : player) {
+            System.out.println(p.getUsername() + " mit ID: " + p.getID() + "    ");
+        }
     }
 
     public int getMaxPlayers() {
         return maxPlayers;
-    }
-
-    public void getCurrentPlayers(int maxPlayers) {
-        this.setMaxPlayers(maxPlayers);
     }
 
     /**
@@ -85,6 +96,19 @@ public class Lobby implements Serializable {
      */
     public void setMaxPlayers(int maxPlayers) {
         this.maxPlayers = maxPlayers;
+    }
+
+    public int getSpecificPlayer(Player pl) {
+        for (Player p : player) {
+            if (p.getUsername().equals(pl.getUsername())) {
+                return -1;
+            }
+        }
+        return 1;
+    }
+    
+    public ArrayList<Player> getListOfPlayers(){
+        return player;
     }
 
 }

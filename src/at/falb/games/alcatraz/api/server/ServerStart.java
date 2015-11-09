@@ -7,7 +7,7 @@ package at.falb.games.alcatraz.api.server;
 
 import at.falb.games.alcatraz.api.common.Lobby;
 import at.falb.games.alcatraz.api.common.Player;
-import at.falb.games.alcatraz.api.common.Server;
+import at.falb.games.alcatraz.api.common.ServerInterface;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -92,28 +92,6 @@ public class ServerStart implements AdvancedMessageListener, Remote, Serializabl
 
         System.out.println("Join to \"" + group.toString() + "\" successful. Startup complete.");
 
-        //********************** TEST LOBBY UND PLAYER FÜR MULTICATING **************************
-        //Test Lobby zum Synchen
-        //Player die Lobby Beitreten
-        Player phteven = new Player();
-        phteven.setID(0);
-        phteven.setRMI("rmi://shiiieeet");
-        phteven.setUsername("Phteven");
-
-        System.out.println(phteven.toString());
-
-        SpreadMessage message = new SpreadMessage();
-        message.setObject(phteven);
-        message.addGroup(spreadGroupName);
-        message.setReliable();
-
-        try {
-            con.multicast(message);
-        } catch (SpreadException e) {
-            LOG.info("Could not join Spread Group: " + e.getMessage().toString());
-        }
-
-        //******************************** ENDE DES TESTBLOCKS ************************************
     }
 
     //Erlernt dynamisch, wieviele Serveres gibt und welche IP diese haben.
@@ -128,22 +106,31 @@ public class ServerStart implements AdvancedMessageListener, Remote, Serializabl
         }
     }
 
+    public void startGame(Lobby lobby) {
+        this.lobby.remove(lobby);
+        System.out.println("Jetzt würde das Spiel starten!");
+
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     //--------------AdvancedMessageListenerMethoden--------------------
     @Override
     public void regularMessageReceived(SpreadMessage sm) {
         try {
             System.out.println("New message from " + sm.getSender());
-            System.out.println(sm.getObject().toString());
+
             String whichClass = sm.getObject().getClass().toString();
             ServerImpl si = new ServerImpl();
 
             if (whichClass.contains("Player")) {
                 Player player = (Player) sm.getObject();
                 if (player.getUsername().startsWith("Login")) {
+                    player.setUsername(player.getUsername().substring(5));
                     lobby = si.realLogin(player, lobby);
                 } else if (player.getUsername().startsWith("Logout")) {
+                    player.setUsername(player.getUsername().substring(6));
+                    System.out.println("Outlog Name: " + player.getUsername());
                     lobby = si.realLogout(player, lobby);
-
                 }
             }
 

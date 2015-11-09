@@ -47,7 +47,7 @@ public class Main {
         }
 
         ServerStart impl = new ServerStart("Prinzi", host, 0, spreadGroupName);
-        ServerStart impl2 = new ServerStart("Bernsch", host, 0, spreadGroupName);
+        //ServerStart impl2 = new ServerStart("Bernsch", host, 0, spreadGroupName);
 
         System.out.println("done");
 

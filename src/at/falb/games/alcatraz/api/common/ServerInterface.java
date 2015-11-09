@@ -12,12 +12,10 @@ import java.rmi.RemoteException;
  *
  * @author stefanprinz
  */
-public interface Server extends Remote {
+public interface ServerInterface extends Remote {
     
     public int loginClient(Player player) throws RemoteException;
 
     public void logoutClient(Player player) throws RemoteException;
-        
-    public void startGame(Lobby lobby) throws RemoteException;
-    
+            
 }
