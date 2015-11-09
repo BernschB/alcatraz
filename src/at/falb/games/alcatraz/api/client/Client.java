@@ -14,8 +14,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serializable;
+import java.rmi.Naming;
 import java.rmi.NotBoundException;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -25,11 +29,15 @@ import java.util.logging.Logger;
  *
  * @author HTM_Campus
  */
-public class Client implements ClientInterface {
+public class Client extends UnicastRemoteObject implements ClientInterface, Remote, Serializable  {
+    
+    public Client() throws RemoteException
+    {}
 
     Properties props = new Properties();
     static int numberServers = 0;
     static ArrayList<String> serverIPs = new ArrayList<String>();
+    private Lobby lobby = new Lobby();
 
     // CLI für die erstellung eines Users
     @SuppressWarnings("empty-statement")
@@ -135,7 +143,11 @@ public class Client implements ClientInterface {
                     
                     player.setMaxPlayers(Integer.parseInt(br.readLine()));
                     
-                    player.setRMI("rmi://localhost:10099".concat(player.getUsername()));
+                    player.setRMI("rmi://localhost:1099/".concat(player.getUsername()));
+                    ClientInterface c = new Client();  
+                    
+                    Naming.rebind(player.getRMI(), c);
+
                     
                     player.regMyRMI();
                     
@@ -186,7 +198,7 @@ public class Client implements ClientInterface {
     }
 
     @Override
-    public int gameStart(Lobby lobby) throws RemoteException {
+    public int gameStart(Lobby lob) throws RemoteException {
         System.out.println("Jetzt startet das Spiel!!! whuuuhh");
         return 0;
     }

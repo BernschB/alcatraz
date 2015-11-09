@@ -16,6 +16,7 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -139,6 +140,8 @@ public class ServerStart implements AdvancedMessageListener, Remote, Serializabl
         } catch (FileNotFoundException ex) {
             Logger.getLogger(ServerStart.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
+            Logger.getLogger(ServerStart.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NotBoundException ex) {
             Logger.getLogger(ServerStart.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

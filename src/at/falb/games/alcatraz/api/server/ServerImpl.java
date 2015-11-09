@@ -14,7 +14,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.UnknownHostException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -67,7 +70,7 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
     }
 
     //Wird aufgerufen, nachdem ein Server eine Join nachricht erhalten hat (auch von sich selbst).
-    protected ArrayList<Lobby> realLogin(Player player, ArrayList<Lobby> lob) {
+    protected ArrayList<Lobby> realLogin(Player player, ArrayList<Lobby> lob) throws NotBoundException, MalformedURLException {
         lobby = lob;
 
         boolean newLobby = true;
@@ -183,12 +186,21 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
 
     }
 
-    public void startGame(Lobby lob) throws RemoteException {
+    public void startGame(Lobby lob) throws RemoteException, NotBoundException, MalformedURLException {
         ArrayList<Player> pl = new ArrayList(lob.getListOfPlayers());
-        ArrayList<ClientInterface> s = new ArrayList<ClientInterface>();
 
+        ArrayList<ClientInterface> ci = new ArrayList<ClientInterface>();
+        
+        String rmi = null;
+
+        
         for (Player p : pl){
-            p.getRMI();
+            rmi = p.getRMI();
+            ci.add((ClientInterface) Naming.lookup(rmi));
+        }
+        
+        for (ClientInterface c : ci){
+            c.gameStart(lob);
         }
     }
 
