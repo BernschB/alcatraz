@@ -7,6 +7,8 @@ package at.falb.games.alcatraz.api.common;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import spread.SpreadException;
 
 /**
  *
@@ -17,5 +19,10 @@ public interface ServerInterface extends Remote {
     public int loginClient(Player player) throws RemoteException;
 
     public void logoutClient(Player player) throws RemoteException;
-            
+    
+    public void sendHello(String hello) throws SpreadException, RemoteException;
+    
+    public void sendLobby(LobbyList lob) throws SpreadException, RemoteException;
+
+
 }

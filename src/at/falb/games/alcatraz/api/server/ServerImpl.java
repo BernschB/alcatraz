@@ -7,6 +7,7 @@ package at.falb.games.alcatraz.api.server;
 
 import at.falb.games.alcatraz.api.common.ClientInterface;
 import at.falb.games.alcatraz.api.common.Lobby;
+import at.falb.games.alcatraz.api.common.LobbyList;
 import at.falb.games.alcatraz.api.common.Player;
 import at.falb.games.alcatraz.api.common.ServerInterface;
 import java.io.FileNotFoundException;
@@ -37,7 +38,7 @@ import spread.SpreadMessage;
  */
 public class ServerImpl extends UnicastRemoteObject implements ServerInterface, AdvancedMessageListener, Remote, Serializable {
 
-    private ArrayList<Lobby> lobby = new ArrayList<Lobby>();
+    private LobbyList lobby = new LobbyList();
     Properties props = new Properties();
     String spreadGroupName = null;
     SpreadConnection c;
@@ -70,19 +71,34 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
     }
 
     //Wird aufgerufen, nachdem ein Server eine Join nachricht erhalten hat (auch von sich selbst).
-    protected ArrayList<Lobby> realLogin(Player player, ArrayList<Lobby> lob) throws NotBoundException, MalformedURLException {
+    protected LobbyList realLogin(Player player, LobbyList lob) throws NotBoundException, MalformedURLException {
         lobby = lob;
+        lobby.seqNrPlus();
+
+        System.out.println("SeqNr = " + lobby.getSeqNr());
+        
+        System.out.println("Logge spieler ein: " +player.getUsername() +" " +player.getMaxPlayers());
+        
+        for (Lobby l : lobby.getArrayList()){
+            System.out.println("Lobby existiert für " +l.getMaxPlayers() +" Spieler");
+        }
 
         boolean newLobby = true;
 
-        for (Lobby l : lobby) {
+        for (Lobby l : lobby.getArrayList()) {
             if (l.getMaxPlayers() == player.getMaxPlayers()) {
                 //Überprüft ob es in der Lobby schon einen Spieler mit dem Namen gibt
-                if(l.getSpecificPlayer(player) == -1){
+                if (l.getSpecificPlayer(player) == -1) {
                     System.out.println("Der Spielername existiert schon!");
                     return lobby;
-                }    
+                }
+                
                 player.setID(l.getCurrentPlayers());
+                for (Player pla : l.getListOfPlayers()){
+                    if (pla.getID() == player.getID()){
+                        player.setID(player.getID()-1);
+                    }
+                }
                 l.addPlayer(player);
                 newLobby = false;
                 System.out.println("User " + player.getUsername() + " wurde zur Lobby hinzugefügt");
@@ -101,10 +117,13 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
         if (newLobby == true) {
             System.out.println("User " + player.getUsername() + " hat eine neune Lobby angelegt");
             player.setID(0);
-            lobby.add(new Lobby(player));
+            Lobby l = new Lobby();
+            l.addPlayer(player);
+            l.setMaxPlayers(player.getMaxPlayers());
+            lobby.addLobby(l);
         }
-
-        for (Lobby l : lobby) {
+        
+        for (Lobby l : lobby.getArrayList()) {
             System.out.println("Aktuelle Spieler: " + l.getCurrentPlayers());
         }
 
@@ -126,11 +145,14 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
         }
     }
 
-    protected ArrayList<Lobby> realLogout(Player player, ArrayList<Lobby> lob) {
-        
+    protected LobbyList realLogout(Player player, LobbyList lob) {
+
         lobby = lob;
-        
-        for (Lobby l : lobby) {
+        lobby.seqNrPlus();
+
+        System.out.println("SeqNr = " + lobby.getSeqNr());
+
+        for (Lobby l : lobby.getArrayList()) {
             if (l.getMaxPlayers() == player.getMaxPlayers()) {
                 l.removePlayer(player);
                 System.out.println("User " + player.getUsername() + " wurde aus der Lobby gelöscht");
@@ -139,8 +161,6 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
         }
         return lobby;
     }
-
-
 
     @Override
     public void regularMessageReceived(SpreadMessage sm) {
@@ -190,18 +210,45 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
         ArrayList<Player> pl = new ArrayList(lob.getListOfPlayers());
 
         ArrayList<ClientInterface> ci = new ArrayList<ClientInterface>();
-        
+
         String rmi = null;
 
-        
-        for (Player p : pl){
+        for (Player p : pl) {
             rmi = p.getRMI();
             System.out.println(rmi);
             ci.add((ClientInterface) Naming.lookup(rmi));
         }
-        
-        for (ClientInterface c : ci){
+
+        for (ClientInterface c : ci) {
             c.gameStart(lob);
+        }
+    }
+
+    @Override
+    public void sendHello(String hello) throws SpreadException {
+        SpreadMessage message = new SpreadMessage();
+        message.setObject(hello);
+        message.addGroup(spreadGroupName);
+        message.setReliable();
+        try {
+            c.multicast(message);
+        } catch (SpreadException e) {
+            System.err.println("Could not Send Message: " + e.getMessage().toString());
+        }
+    }
+
+    @Override
+    public void sendLobby(LobbyList lob) throws SpreadException {
+        System.out.println("Die Lobby die gesendet werden soll: " + lob);
+        SpreadMessage message = new SpreadMessage();
+        message.setObject(lob);
+        message.addGroup(spreadGroupName);
+        message.setReliable();
+        try {
+            System.out.println("Sende jetzt Lobby! :");
+            c.multicast(message);
+        } catch (SpreadException e) {
+            System.err.println("Could not Send Message: " + e.getMessage().toString());
         }
     }
 

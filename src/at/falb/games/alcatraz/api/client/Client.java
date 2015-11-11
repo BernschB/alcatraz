@@ -143,7 +143,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Remo
                     
                     player.setMaxPlayers(Integer.parseInt(br.readLine()));
                     
-                    player.setRMI("rmi://192.168.5.1:1099/".concat(player.getUsername()));
+                    player.setRMI("rmi://localhost:1099/".concat(player.getUsername()));
                     ClientInterface c = new Client();  
                     
                     Naming.rebind(player.getRMI(), c);
