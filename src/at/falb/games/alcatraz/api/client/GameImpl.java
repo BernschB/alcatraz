@@ -28,7 +28,7 @@ import java.util.logging.Logger;
  */
 
 public class GameImpl extends UnicastRemoteObject implements GameInterface, MoveListener, Remote, Serializable { //
-    private final Alcatraz other[] = new Alcatraz[2];
+    private final Alcatraz other[] = new Alcatraz[4];
     private int numPlayer = 2;
     private Player player = new Player();
     private Lobby lobby = new Lobby();
@@ -69,14 +69,17 @@ public class GameImpl extends UnicastRemoteObject implements GameInterface, Move
         System.out.println("otherMoveDone");
         System.out.println(this.otherPlayers.get(0).getRMI());
 //        System.out.println(this.lobby.getListOfPlayers().get(this.otherPlayers.get(0).getID()).getRMI());
-        try {     
-            GameInterface game = (GameInterface) Naming.lookup(this.otherPlayers.get(0).getRMI());
-            System.out.println("pre remoteMoveDone" + this.otherPlayers.get(0).getRMI());
-            game.remoteMoveDone(player, prisoner, rowOrCol, row, col);
-            System.out.println("remoteMoveDone");
-        } catch (NotBoundException | MalformedURLException | RemoteException ex) {
-            Logger.getLogger(GameImpl.class.getName()).log(Level.SEVERE, null, ex);
-        }   
+        for(int i = 0; i < numPlayer - 1; i++)
+        {
+            try {     
+                GameInterface game = (GameInterface) Naming.lookup(this.otherPlayers.get(i).getRMI());
+                System.out.println("pre remoteMoveDone" + this.otherPlayers.get(i).getRMI());
+                game.remoteMoveDone(player, prisoner, rowOrCol, row, col);
+                System.out.println("remoteMoveDone");
+            } catch (NotBoundException | MalformedURLException | RemoteException ex) {
+                Logger.getLogger(GameImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
     
     

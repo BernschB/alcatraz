@@ -6,7 +6,6 @@
 package at.falb.games.alcatraz.api.client;
 
 import static at.falb.games.alcatraz.api.client.PlayerFour.player1;
-import static at.falb.games.alcatraz.api.client.PlayerThree.player1;
 import at.falb.games.alcatraz.api.common.Lobby;
 import at.falb.games.alcatraz.api.common.Player;
 import java.net.MalformedURLException;
@@ -22,7 +21,7 @@ import java.util.logging.Logger;
  *
  * @author HTM_Campus
  */
-public class PlayerTwo {
+public class PlayerThree {
     static Player player1 = new Player();
     static Player player2 = new Player();
     static Player player3 = new Player();
@@ -57,7 +56,7 @@ public class PlayerTwo {
         lobby.setCurrentPlayers(4);
         lobby.setMaxPlayers(4);
         
-        System.out.println("Before Bind " + player2.getRMI() + " ok");
+        System.out.println("Before Bind " + player3.getRMI() + " ok");
         
         //Erstellt einen RMI-Registry für RMI Binds auf dem Well known RMI Registry Port (1099). RMI Adressen müssen dann hier Angemeldet werden.
 
@@ -70,10 +69,10 @@ public class PlayerTwo {
         
         try {
             GameImpl game = new GameImpl();
-            game.startGame(lobby, player2);
+            game.startGame(lobby, player3);
             
-            Naming.rebind(player2.getRMI(), game);
-            System.out.println("Bind with: " + player2.getRMI() + "ok");
+            Naming.rebind(player3.getRMI(), game);
+            System.out.println("Bind with: " + player3.getRMI() + "ok");
         } catch (RemoteException | MalformedURLException ex) {
             Logger.getLogger(PlayerTwo.class.getName()).log(Level.SEVERE, null, ex);
         }

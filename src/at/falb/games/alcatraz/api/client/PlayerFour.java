@@ -5,8 +5,6 @@
  */
 package at.falb.games.alcatraz.api.client;
 
-import static at.falb.games.alcatraz.api.client.PlayerFour.player1;
-import static at.falb.games.alcatraz.api.client.PlayerThree.player1;
 import at.falb.games.alcatraz.api.common.Lobby;
 import at.falb.games.alcatraz.api.common.Player;
 import java.net.MalformedURLException;
@@ -22,7 +20,8 @@ import java.util.logging.Logger;
  *
  * @author HTM_Campus
  */
-public class PlayerTwo {
+public class PlayerFour {
+
     static Player player1 = new Player();
     static Player player2 = new Player();
     static Player player3 = new Player();
@@ -56,27 +55,26 @@ public class PlayerTwo {
         lobby.addPlayer(player4);
         lobby.setCurrentPlayers(4);
         lobby.setMaxPlayers(4);
-        
-        System.out.println("Before Bind " + player2.getRMI() + " ok");
-        
-        //Erstellt einen RMI-Registry für RMI Binds auf dem Well known RMI Registry Port (1099). RMI Adressen müssen dann hier Angemeldet werden.
 
+        System.out.println("Before Bind " + player3.getRMI() + " ok");
+
+        //Erstellt einen RMI-Registry für RMI Binds auf dem Well known RMI Registry Port (1099). RMI Adressen müssen dann hier Angemeldet werden.
         System.out.println("Create RMI-Registry...");
 //        try {
 //            LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
 //        } catch (RemoteException ex) {
 //            Logger.getLogger(PlayerOne.class.getName()).log(Level.SEVERE, null, ex);
 //        }
-        
+
         try {
             GameImpl game = new GameImpl();
-            game.startGame(lobby, player2);
-            
-            Naming.rebind(player2.getRMI(), game);
-            System.out.println("Bind with: " + player2.getRMI() + "ok");
+            game.startGame(lobby, player4);
+
+            Naming.rebind(player4.getRMI(), game);
+            System.out.println("Bind with: " + player4.getRMI() + "ok");
         } catch (RemoteException | MalformedURLException ex) {
             Logger.getLogger(PlayerTwo.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-    }      
+
+    }
 }

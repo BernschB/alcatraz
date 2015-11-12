@@ -5,6 +5,7 @@
  */
 package at.falb.games.alcatraz.api.client;
 
+import static at.falb.games.alcatraz.api.client.PlayerOne.player1;
 import at.falb.games.alcatraz.api.common.ClientInterface;
 import at.falb.games.alcatraz.api.common.Lobby;
 import at.falb.games.alcatraz.api.common.Player;
@@ -15,10 +16,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -200,6 +204,27 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Remo
     @Override
     public int gameStart(Lobby lob) throws RemoteException {
         System.out.println("Jetzt startet das Spiel!!! whuuuhh");
+        
+        //Folgende Zeilen ersetzen die Main-Routine in PlayerOne usw.
+        //Erstellt einen RMI-Registry für RMI Binds auf dem Well known RMI Registry Port (1099). RMI Adressen müssen dann hier Angemeldet werden.
+        System.out.println("Create RMI-Registry...");
+        try {
+            LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
+        } catch (RemoteException ex) {
+            Logger.getLogger(PlayerOne.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
+        try {
+            GameImpl game = new GameImpl();
+            game.startGame(lobby, player1);
+            
+            Naming.rebind(player1.getRMI(), game);
+            System.out.println("Bind with: " + player1.getRMI() + "ok");
+        } catch (RemoteException | MalformedURLException ex) {
+            Logger.getLogger(PlayerTwo.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         return 0;
     }
 
