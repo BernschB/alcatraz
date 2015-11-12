@@ -118,7 +118,9 @@ public class GameImpl extends UnicastRemoteObject implements GameInterface, Move
     @Override
     public void startGame(Lobby lobby, Player player) throws RemoteException
     {
-        ArrayList<Alcatraz> alcatraz = new ArrayList<Alcatraz>();
+//        ArrayList<Alcatraz> alcatraz = new ArrayList<Alcatraz>();
+        Alcatraz al = new Alcatraz();
+        
         this.lobby = lobby;
         this.player = player;
         
@@ -127,29 +129,40 @@ public class GameImpl extends UnicastRemoteObject implements GameInterface, Move
         System.out.println("numPlayer = " + numPlayer);
         
         // Zuerst müsse  alle Games und Alcatrac Objekte erstellt werden
-        for(int i = 0; i < numPlayer; i++)
-        {
-            alcatraz.add(new Alcatraz());       
-            alcatraz.get(i).init(numPlayer, this.lobby.getListOfPlayers().get(i).getID());
-            System.out.println("alcatraz Player = " + this.lobby.getListOfPlayers().get(i).getUsername());
-            System.out.println("alcatraz PlayerID = " + this.lobby.getListOfPlayers().get(i).getID());
-        }     
+//        for(int i = 0; i < numPlayer; i++)
+//        {
+//            alcatraz.add(new Alcatraz());       
+//            alcatraz.get(i).init(numPlayer, this.lobby.getListOfPlayers().get(i).getID());
+//            System.out.println("alcatraz Player = " + this.lobby.getListOfPlayers().get(i).getUsername());
+//            System.out.println("alcatraz PlayerID = " + this.lobby.getListOfPlayers().get(i).getID());
+//        }     
         
-        for(int i = 0; i < numPlayer; i++)
-        {
-            for(int j = 0; j < numPlayer; j++)
-            {
-                alcatraz.get(i).getPlayer(j).setName(this.lobby.getListOfPlayers().get(j).getUsername());
-            }
-        } 
+        al.init(numPlayer, player.getID());
+        System.out.println(player.getUsername() +" is jez dabei");
+        
+        
+//        for(int i = 0; i < numPlayer; i++)
+//        {
+//            for(int j = 0; j < numPlayer; j++)
+//            {
+//                alcatraz.get(i).getPlayer(j).setName(this.lobby.getListOfPlayers().get(j).getUsername());
+//            }
+//        } 
+        
+        for (int i = 0; i < numPlayer; i++){
+            al.getPlayer(i).setName(player.getUsername());
+        }
+        
        
         
         for(int i = 0; i < numPlayer; i++)
         {
                 System.out.println("setOther i = " + i);
-                this.setOther(i, alcatraz.get((i+1) % numPlayer));
+                this.setOther(i, al);
         } 
         
+       
+       
         for(int i = 0; i < numPlayer; i++)
         {
             // Der Array mit den anderen Spieler wird befüllt
@@ -162,8 +175,12 @@ public class GameImpl extends UnicastRemoteObject implements GameInterface, Move
         }   
 
         System.out.println("player.getID() = " + player.getID());
-        alcatraz.get(player.getID()).showWindow();
-        alcatraz.get(player.getID()).addMoveListener(this);
-        alcatraz.get(player.getID()).start();
+        al.showWindow();
+        al.addMoveListener(this);
+        al.start();
+        
+//        alcatraz.get(player.getID()).showWindow();
+//        alcatraz.get(player.getID()).addMoveListener(this);
+//        alcatraz.get(player.getID()).start();
     } 
 }

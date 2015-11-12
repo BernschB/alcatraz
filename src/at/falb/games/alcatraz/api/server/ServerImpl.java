@@ -76,11 +76,11 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
         lobby.seqNrPlus();
 
         System.out.println("SeqNr = " + lobby.getSeqNr());
-        
-        System.out.println("Logge spieler ein: " +player.getUsername() +" " +player.getMaxPlayers());
-        
-        for (Lobby l : lobby.getArrayList()){
-            System.out.println("Lobby existiert für " +l.getMaxPlayers() +" Spieler");
+
+        System.out.println("Logge spieler ein: " + player.getUsername() + " " + player.getMaxPlayers());
+
+        for (Lobby l : lobby.getArrayList()) {
+            System.out.println("Lobby existiert für " + l.getMaxPlayers() + " Spieler");
         }
 
         boolean newLobby = true;
@@ -92,11 +92,11 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
                     System.out.println("Der Spielername existiert schon!");
                     return lobby;
                 }
-                
+
                 player.setID(l.getCurrentPlayers());
-                for (Player pla : l.getListOfPlayers()){
-                    if (pla.getID() == player.getID()){
-                        player.setID(player.getID()-1);
+                for (Player pla : l.getListOfPlayers()) {
+                    if (pla.getID() == player.getID()) {
+                        player.setID(player.getID() - 1);
                     }
                 }
                 l.addPlayer(player);
@@ -122,7 +122,7 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
             l.setMaxPlayers(player.getMaxPlayers());
             lobby.addLobby(l);
         }
-        
+
         for (Lobby l : lobby.getArrayList()) {
             System.out.println("Aktuelle Spieler: " + l.getCurrentPlayers());
         }
@@ -207,9 +207,10 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
     }
 
     public void startGame(Lobby lob) throws RemoteException, NotBoundException, MalformedURLException {
-        ArrayList<Player> pl = new ArrayList(lob.getListOfPlayers());
 
+        ArrayList<Player> pl = new ArrayList(lob.getListOfPlayers());
         ArrayList<ClientInterface> ci = new ArrayList<ClientInterface>();
+
 
         String rmi = null;
 
@@ -218,10 +219,18 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
             System.out.println(rmi);
             ci.add((ClientInterface) Naming.lookup(rmi));
         }
-
-        for (ClientInterface c : ci) {
-            c.gameStart(lob);
-        }
+        
+        System.out.println("NumberPlayer: " +lob.getMaxPlayers());
+        
+        //Mechanismus einbauen, damit jeder in "gameStart" weiß, wer er selbst ist.
+        
+        int i = 0;
+         for (ClientInterface cli : ci) {
+         //System.out.println("GameStart wärs");
+            cli.gameStart(lob, pl.get(i));
+            i++;
+         }
+         
     }
 
     @Override

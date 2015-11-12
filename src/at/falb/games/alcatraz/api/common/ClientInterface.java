@@ -14,6 +14,6 @@ import java.rmi.RemoteException;
  */
 public interface ClientInterface extends Remote {
     
-    public int gameStart(Lobby lobby) throws RemoteException;
+    public int gameStart(Lobby lobby, Player you) throws RemoteException;
 
 }

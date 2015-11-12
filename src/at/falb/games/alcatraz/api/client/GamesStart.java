@@ -16,6 +16,7 @@ import java.util.ArrayList;
  */
 public class GamesStart implements MoveListener {
 
+    
     private Alcatraz other[] = new Alcatraz[4];
     private int numPlayer = 4;
 
