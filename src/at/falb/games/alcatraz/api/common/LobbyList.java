@@ -11,6 +11,10 @@ import java.util.ArrayList;
  *
  * @author stefanprinz
  */
+
+//Class where all Lobbies are stored and the Sequence number.
+//Sequence number increase by 1 when something in a lobby changes (the state changes)
+//Used by Servers to check if they are up to date
 public class LobbyList extends ArrayList {
     
     private ArrayList<Lobby> lobby = new ArrayList<Lobby>();

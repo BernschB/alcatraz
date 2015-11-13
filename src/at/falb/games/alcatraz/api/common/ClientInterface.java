@@ -12,6 +12,8 @@ import java.rmi.RemoteException;
  *
  * @author stefanprinz
  */
+
+//Interface used by Server to contact Clients
 public interface ClientInterface extends Remote {
     
     public int gameStart(Lobby lobby, Player you) throws RemoteException;

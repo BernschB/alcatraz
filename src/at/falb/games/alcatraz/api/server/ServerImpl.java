@@ -5,9 +5,7 @@
  */
 package at.falb.games.alcatraz.api.server;
 
-import at.falb.games.alcatraz.api.client.GameImpl;
 import at.falb.games.alcatraz.api.common.ClientInterface;
-import at.falb.games.alcatraz.api.common.GameInterface;
 import at.falb.games.alcatraz.api.common.Lobby;
 import at.falb.games.alcatraz.api.common.LobbyList;
 import at.falb.games.alcatraz.api.common.Player;
@@ -16,7 +14,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.rmi.Naming;
@@ -31,7 +28,6 @@ import java.util.logging.Logger;
 import spread.AdvancedMessageListener;
 import spread.SpreadConnection;
 import spread.SpreadException;
-import spread.SpreadGroup;
 import spread.SpreadMessage;
 
 /**
@@ -46,9 +42,9 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
     SpreadConnection c;
 
     public ServerImpl() throws RemoteException, FileNotFoundException, IOException {
-
     }
 
+    //reads prop-file
     public ServerImpl(SpreadConnection con) throws RemoteException, FileNotFoundException, IOException {
         super();
         c = con;
@@ -58,22 +54,22 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
 
     }
 
+    //Sends Reliable Multicast to group --> It's time to login.
+    //RegularMessageReceived gets called in "ServerStart", because "c" is created in "ServerStart"
     @Override
     public int loginClient(Player player) {
 
         try {
             this.sendLoginMessage(player);
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SpreadException ex) {
+        } catch (UnknownHostException | SpreadException ex) {
             Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
-
         return 1;
     }
 
-    //Wird aufgerufen, nachdem ein Server eine Join nachricht erhalten hat (auch von sich selbst).
+    //Gets called after all servers got the Login Request from Client
     protected LobbyList realLogin(Player player, LobbyList lob) throws NotBoundException, MalformedURLException {
+
         lobby = lob;
         lobby.seqNrPlus();
 
@@ -89,21 +85,26 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
 
         for (Lobby l : lobby.getArrayList()) {
             if (l.getMaxPlayers() == player.getMaxPlayers()) {
-                //Überprüft ob es in der Lobby schon einen Spieler mit dem Namen gibt
+                //Checks if there is a player with that name in any Lobby --> unique
                 if (l.getSpecificPlayer(player) == -1) {
                     System.out.println("Der Spielername existiert schon!");
                     return lobby;
                 }
 
+                //Sets ID between 0 and maxplayers-1 on the fly
                 player.setID(l.getCurrentPlayers());
                 for (Player pla : l.getListOfPlayers()) {
                     if (pla.getID() == player.getID()) {
                         player.setID(player.getID() - 1);
                     }
                 }
+
                 l.addPlayer(player);
+
                 newLobby = false;
                 System.out.println("User " + player.getUsername() + " wurde zur Lobby hinzugefügt");
+
+                //If lobby is full, startGame gets called, which initiates the start procedure on the clients
                 if (l.isFull()) {
                     System.out.println("Lobby ist jetzt voll");
                     try {
@@ -116,6 +117,7 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
             }
         }
 
+        //If there is no Lobby yet with the required amount of players, create it
         if (newLobby == true) {
             System.out.println("User " + player.getUsername() + " hat eine neune Lobby angelegt");
             player.setID(0);
@@ -125,6 +127,7 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
             lobby.addLobby(l);
         }
 
+        //Prints the current players in the lobby
         for (Lobby l : lobby.getArrayList()) {
             System.out.println("Aktuelle Spieler: " + l.getCurrentPlayers());
         }
@@ -136,17 +139,17 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
      *
      * @param player
      */
+    //Same as with login. Sends message to all Servers an then "realLogout" gest called
     @Override
     public void logoutClient(Player player) {
         try {
             this.sendLogoutMessage(player);
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SpreadException ex) {
+        } catch (UnknownHostException | SpreadException ex) {
             Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
+    //Real Logout, all servers do this
     protected LobbyList realLogout(Player player, LobbyList lob) {
 
         lobby = lob;
@@ -164,6 +167,8 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
         return lobby;
     }
 
+    //Will not be used here
+    //Spread connection is of ServerSTart
     @Override
     public void regularMessageReceived(SpreadMessage sm) {
         System.out.println("RegularMessageReceived in ServerImpl... which is weird");
@@ -174,9 +179,12 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    //Sends the LoginMessage
     public void sendLoginMessage(Player player) throws UnknownHostException, SpreadException {
 
-        //System.out.println("SendLoginMessage noch nicht supported");
+        //Servers must know what todo with the received message
+        //So we just concatenated "Login" at the beginning of the username
+        //Servers see that, know what todo and remove "Login" from name again
         SpreadMessage message = new SpreadMessage();
         player.setUsername("Login".concat(player.getUsername()));
         message.setObject(player);
@@ -186,14 +194,16 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
             System.out.println("Message wird gesendet an Gruppe :" + spreadGroupName);
             c.multicast(message);
         } catch (SpreadException e) {
-            System.err.println("Could not Send Message: " + e.getMessage().toString());
+            System.err.println("Could not Send Message: " + e.getMessage());
         }
 
     }
 
     public void sendLogoutMessage(Player player) throws UnknownHostException, SpreadException {
 
-        //System.out.println("SendLoginMessage noch nicht supported");
+        //Servers must know what todo with the received message
+        //So we just concatenated "Logou" at the beginning of the username
+        //Servers see that, know what todo and remove "Logout" from name again        
         SpreadMessage message = new SpreadMessage();
         player.setUsername("Logout".concat(player.getUsername()));
         message.setObject(player);
@@ -203,40 +213,38 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
             System.out.println("Message wird gesendet an Gruppe :" + spreadGroupName);
             c.multicast(message);
         } catch (SpreadException e) {
-            System.err.println("Could not Send Message: " + e.getMessage().toString());
+            System.err.println("Could not Send Message: " + e.getMessage());
         }
 
     }
 
+    //This Method calls the Client via RMI to initiate the game to start
     public void startGame(Lobby lob) throws RemoteException, NotBoundException, MalformedURLException {
 
         ArrayList<Player> pl = new ArrayList(lob.getListOfPlayers());
-        //ArrayList<GameInterface> gi = new ArrayList<GameInterface>();
-        ArrayList<ClientInterface> ci = new ArrayList<ClientInterface>();
-
-        String rmi = null;
-
+        ArrayList<ClientInterface> ci = new ArrayList<>();
+        String rmi;
 
         for (Player p : pl) {
             rmi = p.getRMI();
             System.out.println(rmi);
-            //gi.add((GameInterface) Naming.lookup(rmi));
             ci.add((ClientInterface) Naming.lookup(rmi));
         }
 
         System.out.println("NumberPlayer: " + lob.getMaxPlayers());
 
-        //Mechanismus einbauen, damit jeder in "gameStart" weiß, wer er selbst ist.
+        //Calls "gameStart" on every Client participating in the game
         int i = 0;
-        //for (GameInterface gint : gi) {
-        for (ClientInterface cli : ci){
-            //cli.startGame(lob, pl.get(i));
+        for (ClientInterface cli : ci) {
             cli.gameStart(lob, pl.get(i));
             i++;
         }
 
     }
 
+    //Method to synchronize with other servers after a reboot
+    //If servers receive a hello message, they multicast their current LobbyList (including sequence number)
+    //Every server then gets the most current lobby
     @Override
     public void sendHello(String hello) throws SpreadException {
         SpreadMessage message = new SpreadMessage();
@@ -250,6 +258,7 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
         }
     }
 
+    //Send the Lobby here after receiving a Hello Message
     @Override
     public void sendLobby(LobbyList lob) throws SpreadException {
         System.out.println("Die Lobby die gesendet werden soll: " + lob);
@@ -261,7 +270,7 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
             System.out.println("Sende jetzt Lobby! :");
             c.multicast(message);
         } catch (SpreadException e) {
-            System.err.println("Could not Send Message: " + e.getMessage().toString());
+            System.err.println("Could not Send Message: " + e.getMessage());
         }
     }
 

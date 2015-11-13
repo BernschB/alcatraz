@@ -34,6 +34,7 @@ public class Lobby implements Serializable {
         return this.currentPlayers == this.maxPlayers;
     }
 
+    //Gives you a String with all Players in the lobby
     public String getPlayer() {
         String string = "";
         for (Player pl : player) {
@@ -43,6 +44,7 @@ public class Lobby implements Serializable {
         return string;
     }
 
+    //Adds a Player to the lobby
     public void addPlayer(Player pl) {
         player.add(pl);
         currentPlayers++;
@@ -51,9 +53,10 @@ public class Lobby implements Serializable {
         }
     }
 
+    //Removes Player from Lobby
     public void removePlayer(Player pl) {
         
-        ArrayList<Player> copy = new ArrayList<Player>(player);
+        ArrayList<Player> copy = new ArrayList<>(player);
 
         for (Player p : player) {
             if (p.getUsername().equals(pl.getUsername())) {
@@ -87,6 +90,7 @@ public class Lobby implements Serializable {
         this.currentPlayers = currentPlayers;
     }
 
+    @Override
     public String toString() {
         return "Diese Lobbie hat " + this.currentPlayers + " Spieler";
     }
@@ -98,6 +102,7 @@ public class Lobby implements Serializable {
         this.maxPlayers = maxPlayers;
     }
 
+    //Tells you if specific player is in a lobby
     public int getSpecificPlayer(Player pl) {
         for (Player p : player) {
             if (p.getUsername().equals(pl.getUsername())) {

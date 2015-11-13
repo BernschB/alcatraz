@@ -33,8 +33,8 @@ public class Main {
      */
     public static void main(String[] args) throws SpreadException, RemoteException, IOException {
 
-        
-        String host = "192.168.5.1";
+        //Change dependin on your address
+        String host = "127.0.0.1";
         String spreadGroupName = "alcatraz-SpreadGroup";
 
         System.out.println("Starting up Server...");
@@ -44,9 +44,10 @@ public class Main {
             System.out.println("Create RMI-Registry...");
             LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
         } catch (RemoteException e) {
-            LOG.info("Could not register Service. " + e.getMessage());
+            LOG.log(Level.INFO, "Could not register Service. {0}", e.getMessage());
         }
 
+        //hardcoded private spread name
         ServerStart impl = new ServerStart("Prinzi", host, 0, spreadGroupName);
         //ServerStart impl1 = new ServerStart("Prinzi", host, 0, spreadGroupName);
         

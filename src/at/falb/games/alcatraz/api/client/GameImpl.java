@@ -27,7 +27,8 @@ import java.util.logging.Logger;
  * @author HTM_Campus
  */
 
-public class GameImpl extends UnicastRemoteObject implements GameInterface, MoveListener, Remote, Serializable { //
+public class GameImpl extends UnicastRemoteObject implements GameInterface, MoveListener, Remote, Serializable { 
+    
     private final Alcatraz other[] = new Alcatraz[4];
     private int numPlayer = 2;
     private Player player = new Player();
@@ -118,7 +119,7 @@ public class GameImpl extends UnicastRemoteObject implements GameInterface, Move
     @Override
     public void startGame(Lobby lobby, Player player) throws RemoteException
     {
-        ArrayList<Alcatraz> alcatraz = new ArrayList<Alcatraz>();
+        ArrayList<Alcatraz> alcatraz = new ArrayList<>();
         this.lobby = lobby;
         this.player = player;
         
@@ -126,7 +127,7 @@ public class GameImpl extends UnicastRemoteObject implements GameInterface, Move
         this.numPlayer = this.lobby.getCurrentPlayers();
         System.out.println("numPlayer = " + numPlayer);
         
-        // Zuerst müsse  alle Games und Alcatrac Objekte erstellt werden
+        //Create alcatraz Interface for each player
         for(int i = 0; i < numPlayer; i++)
         {
             alcatraz.add(new Alcatraz());       
@@ -152,7 +153,7 @@ public class GameImpl extends UnicastRemoteObject implements GameInterface, Move
         
         for(int i = 0; i < numPlayer; i++)
         {
-            // Der Array mit den anderen Spieler wird befüllt
+            //Fill "otherplayer Array with other players
             if(!(player.equals(this.lobby.getListOfPlayers().get(i))))
             {
                 this.otherPlayers.add(this.lobby.getListOfPlayers().get(i));

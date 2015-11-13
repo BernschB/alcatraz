@@ -7,7 +7,6 @@ package at.falb.games.alcatraz.api.common;
 
 import at.falb.games.alcatraz.api.server.ServerImpl;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -16,10 +15,8 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,7 +30,7 @@ public class Player implements Serializable {
     private String username;
     private int maxPlayers;
     private String RMI;     //Hätte mir gedacht, die RMI der Clients wird ihnen vom Server übergeben. Also die Clients binden sich nicht selbst, sondern bekommen zur Laufzeit von den Servern eine RMI Adresse zugewisesn.
-    ArrayList<ServerInterface> s = new ArrayList<ServerInterface>();
+    ArrayList<ServerInterface> s = new ArrayList<>();
 
     public Player() {
     }
@@ -96,13 +93,11 @@ public class Player implements Serializable {
         return maxPlayers;
     }
 
-    /**
-     * @param ID the ID to set
-     */
     public void setMaxPlayers(int maxPlayers) {
         this.maxPlayers = maxPlayers;
     }
     
+    @Override
     public String toString(){
         return "Spielername: " +this.getUsername();
     }
@@ -110,21 +105,17 @@ public class Player implements Serializable {
     public ArrayList<ServerInterface> regPlayer(int numberServers, ArrayList<String> serverIPs) throws FileNotFoundException, IOException, NotBoundException {
         String[] rmis = null;
         String regIP = null;
-        //Get all Server RMIs from RMI-Registry 
-        //If first Registry is not available, go to next
-        //Then bind to all Servers in ArrayList<Server>
-        
+
+        //Locate all server Registrys to not have SPOF
         for (String ip : serverIPs) {
             try {
                 rmis = LocateRegistry.getRegistry(ip, 1099).list();
                 System.out.println("Alle gefundenen RMI-Hosts auf der Registry: " + Arrays.toString(rmis));
                 regIP =  ip;
-                //break;
-            } catch (RemoteException ex) {
-                continue;
-            }
+            } catch (RemoteException ex) {}
         }
         
+        //Bind to all Servers
         for (int i = 0; i < Array.getLength(rmis); i++){
             System.out.println("Bind to host:" +rmis[i]);
             try {
@@ -139,6 +130,7 @@ public class Player implements Serializable {
     }
     
     public void regMyRMI(){
+        
         String rmi = this.getRMI();
         ServerImpl si = null;
         try {
@@ -149,16 +141,16 @@ public class Player implements Serializable {
             Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
         }
         
+        
         for (ServerInterface sInt : s){
             try {
-                Naming.rebind(rmi, si);
-            } catch (RemoteException ex) {
-                System.out.println("Jez happats");
-            } catch (MalformedURLException ex) {
+                Naming.rebind(rmi, sInt);
+            } catch (RemoteException | MalformedURLException ex) {
                 System.out.println("Jez happats");
             }
         
         }
+                
     }
 
     //Erlernt dynamisch, wieviele Serveres gibt und welche IP diese haben.

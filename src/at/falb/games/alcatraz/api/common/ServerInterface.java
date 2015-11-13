@@ -14,6 +14,8 @@ import spread.SpreadException;
  *
  * @author stefanprinz
  */
+
+//Interface used for Clients to call Servers and Servers between Servers
 public interface ServerInterface extends Remote {
     
     public int loginClient(Player player) throws RemoteException;

@@ -13,14 +13,12 @@ import java.rmi.RemoteException;
  *
  * @author HTM_Campus
  */
+
+//Interface used for Clients while playing
 public interface GameInterface extends Remote {
     
     public void startGame(Lobby lobby, Player myPlayer) throws RemoteException;
     
     public void remoteMoveDone(at.falb.games.alcatraz.api.Player player, Prisoner prisoner, int rowOrCol, int row, int col) throws RemoteException;
-    
-//    public void otherMoveDone(at.falb.games.alcatraz.api.Player player, Prisoner prisoner, int rowOrCol, int row, int col);    
-
-//    public void myMoveDone(at.falb.games.alcatraz.api.Player player, Prisoner prisoner, int rowOrCol, int row, int col);
 
 }
