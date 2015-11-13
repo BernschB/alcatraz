@@ -5,7 +5,9 @@
  */
 package at.falb.games.alcatraz.api.server;
 
+import at.falb.games.alcatraz.api.client.GameImpl;
 import at.falb.games.alcatraz.api.common.ClientInterface;
+import at.falb.games.alcatraz.api.common.GameInterface;
 import at.falb.games.alcatraz.api.common.Lobby;
 import at.falb.games.alcatraz.api.common.LobbyList;
 import at.falb.games.alcatraz.api.common.Player;
@@ -209,28 +211,30 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
     public void startGame(Lobby lob) throws RemoteException, NotBoundException, MalformedURLException {
 
         ArrayList<Player> pl = new ArrayList(lob.getListOfPlayers());
+        //ArrayList<GameInterface> gi = new ArrayList<GameInterface>();
         ArrayList<ClientInterface> ci = new ArrayList<ClientInterface>();
 
-
         String rmi = null;
+
 
         for (Player p : pl) {
             rmi = p.getRMI();
             System.out.println(rmi);
+            //gi.add((GameInterface) Naming.lookup(rmi));
             ci.add((ClientInterface) Naming.lookup(rmi));
         }
-        
-        System.out.println("NumberPlayer: " +lob.getMaxPlayers());
-        
+
+        System.out.println("NumberPlayer: " + lob.getMaxPlayers());
+
         //Mechanismus einbauen, damit jeder in "gameStart" weiß, wer er selbst ist.
-        
         int i = 0;
-         for (ClientInterface cli : ci) {
-         //System.out.println("GameStart wärs");
+        //for (GameInterface gint : gi) {
+        for (ClientInterface cli : ci){
+            //cli.startGame(lob, pl.get(i));
             cli.gameStart(lob, pl.get(i));
             i++;
-         }
-         
+        }
+
     }
 
     @Override

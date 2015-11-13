@@ -5,10 +5,6 @@
  */
 package at.falb.games.alcatraz.api.client;
 
-import static at.falb.games.alcatraz.api.client.PlayerOne.player1;
-import static at.falb.games.alcatraz.api.client.PlayerOne.player2;
-import static at.falb.games.alcatraz.api.client.PlayerOne.player3;
-import static at.falb.games.alcatraz.api.client.PlayerOne.player4;
 
 import at.falb.games.alcatraz.api.common.ClientInterface;
 import at.falb.games.alcatraz.api.common.Lobby;
@@ -21,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.net.MalformedURLException;
+import java.rmi.ConnectException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
@@ -41,7 +38,6 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Remo
 
     private static int globalCounter = 0;
 
-    
     public Client() throws RemoteException {
     }
 
@@ -113,14 +109,6 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Remo
 
         Player player = new Player();
 
-        try {
-            s = dummy.regPlayer(numberServers, serverIPs);
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NotBoundException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
         int doAction = 0;
 
         while (end == false) {
@@ -141,64 +129,52 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Remo
             //doAction = 1;
             switch (doAction) {
                 case 1:
-                     System.out.println("Geben Sie ihren Usernamen ein!");
-                     isr = new InputStreamReader(System.in);
-                     br = new BufferedReader(isr);
+                    System.out.println("Geben Sie ihren Usernamen ein!");
+                    isr = new InputStreamReader(System.in);
+                    br = new BufferedReader(isr);
 
-                     player.setUsername(br.readLine());
-                    
-                     System.out.println("Geben Sie ihre maximale Spielerzahl ein!");
-                     isr = new InputStreamReader(System.in);
-                     br = new BufferedReader(isr);
-                    
-                     player.setMaxPlayers(Integer.parseInt(br.readLine()));
-                    
-                     player.setRMI("rmi://localhost:1099/".concat(player.getUsername()));
-                     ClientInterface c = new Client();  
-                     
-                     Naming.rebind(player.getRMI(), c);
-                     player.regMyRMI();
-                     
-//                    ClientInterface c = new Client();
-//
-//                    Player player2 = new Player();
-//                    Player player3 = new Player();
-//                    Player player4 = new Player();
-//                    Player player5 = new Player();
-//
-//                    player5.setUsername("player1");
-//                    player5.setMaxPlayers(4);
-//                    player5.setRMI("rmi://localhost:1099/".concat(player5.getUsername()));
-//                    Naming.rebind(player5.getRMI(), c);
-//                    player5.regMyRMI();
-//
-//                    player2.setUsername("player2");
-//                    player2.setMaxPlayers(4);
-//                    player2.setRMI("rmi://localhost:1099/".concat(player2.getUsername()));
-//                    Naming.rebind(player2.getRMI(), c);
-//                    player2.regMyRMI();
-//
-//                    player3.setUsername("player3");
-//                    player3.setMaxPlayers(4);
-//                    player3.setRMI("rmi://localhost:1099/".concat(player3.getUsername()));
-//                    Naming.rebind(player3.getRMI(), c);
-//                    player3.regMyRMI();
-//
-//                    player4.setUsername("player4");
-//                    player4.setMaxPlayers(4);
-//                    player4.setRMI("rmi://localhost:1099/".concat(player4.getUsername()));
-//                    Naming.rebind(player4.getRMI(), c);
-//                    player4.regMyRMI();
+                    player.setUsername(br.readLine());
+
+                    System.out.println("Geben Sie ihre maximale Spielerzahl ein!");
+                    isr = new InputStreamReader(System.in);
+                    br = new BufferedReader(isr);
+
+                    player.setMaxPlayers(Integer.parseInt(br.readLine()));
+
+                    player.setRMI("rmi://192.168.5.1:10099/".concat(player.getUsername()));
+                    ClientInterface c = new Client();
 
                     try {
-                        System.out.println(s.get(0).loginClient(player));
+                        LocateRegistry.createRegistry(10099);
+                    } catch (RemoteException ex) {
+
+                    }
+
+                    Naming.rebind(player.getRMI(), c);
+                    player.regMyRMI();
+
+//                    ClientInterface c = new Client();
+                    try {
+                        s = dummy.regPlayer(numberServers, serverIPs);
+                    } catch (FileNotFoundException ex) {
+                        Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (NotBoundException ex) {
+                        Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    for (ServerInterface server : s) {
+                        try {
+                            System.out.println("Serveradresse: " + server);
+                            System.out.println(server.loginClient(player));
 //                        System.out.println(s.get(0).loginClient(player5));
 //                        System.out.println(s.get(0).loginClient(player2));
 //                        System.out.println(s.get(0).loginClient(player3));
 //                        System.out.println(s.get(0).loginClient(player4));
 
-                    } catch (RemoteException ex) {
-                        Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (RemoteException ex) {
+                            //System.out.println("Höppala, server ned da");
+                            //continue;
+                        }
                     }
                     break;
                 case 2:
@@ -208,7 +184,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Remo
 
                     player.setMaxPlayers(4);
                     player.setUsername(br.readLine());
-                    player.setRMI("rmi://localhost:1 099".concat(player.getUsername()));
+                    player.setRMI("rmi://192.168.5.1:10099".concat(player.getUsername()));
                     //player.setMaxPlayers(4);
 
                     try {
@@ -236,7 +212,6 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Remo
         for (int i = 1; i <= numberServers; i++) {
             serverIPs.add(props.getProperty("server" + i + ".host"));
             System.out.println("IP vom" + i + ". Server = " + serverIPs.get(i - 1));
-
         }
     }
 
@@ -248,26 +223,21 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Remo
         Registry reg;
 
         //Folgende Zeilen ersetzen die Main-Routine in PlayerOne usw.
-        //Erstellt einen RMI-Registry für RMI Binds auf dem Well known RMI Registry Port (1099). RMI Adressen müssen dann hier Angemeldet werden.
+        //Erstellt einen RMI-Registry für RMI Binds auf dem Well known RMI Registry Port (10099). RMI Adressen müssen dann hier Angemeldet werden.
         System.out.println("Create RMI-Registry...");
         try {
             LocateRegistry.createRegistry(10099);
         } catch (RemoteException ex) {
         }
-        
-        //Um zu wissen, wer ICH bin, wenn ich lokal mehr als einen Spieler habe.
-//        System.out.println("GlobalCounter = " +globalCounter);
-//        me = lob.getListOfPlayers().get(globalCounter);
-//        globalCounter++;
 
         try {
             GameImpl game = new GameImpl();
             game.startGame(lobby, me);
             Naming.rebind(me.getRMI(), game);
             System.out.println("Bind with: " + me.getRMI() + "           ok");
-            
+
         } catch (RemoteException | MalformedURLException ex) {
-            Logger.getLogger(PlayerTwo.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("shiet");
         }
 
         return 0;

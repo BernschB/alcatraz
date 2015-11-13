@@ -109,17 +109,17 @@ public class Player implements Serializable {
 
     public ArrayList<ServerInterface> regPlayer(int numberServers, ArrayList<String> serverIPs) throws FileNotFoundException, IOException, NotBoundException {
         String[] rmis = null;
-        String regIP = "0.0.0.0";
-
+        String regIP = null;
         //Get all Server RMIs from RMI-Registry 
         //If first Registry is not available, go to next
         //Then bind to all Servers in ArrayList<Server>
+        
         for (String ip : serverIPs) {
             try {
-                rmis = LocateRegistry.getRegistry(ip).list();
+                rmis = LocateRegistry.getRegistry(ip, 1099).list();
                 System.out.println("Alle gefundenen RMI-Hosts auf der Registry: " + Arrays.toString(rmis));
-                regIP = ip;
-                break;
+                regIP =  ip;
+                //break;
             } catch (RemoteException ex) {
                 continue;
             }

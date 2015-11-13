@@ -33,7 +33,8 @@ public class Main {
      */
     public static void main(String[] args) throws SpreadException, RemoteException, IOException {
 
-        String host = "localhost";
+        
+        String host = "192.168.5.1";
         String spreadGroupName = "alcatraz-SpreadGroup";
 
         System.out.println("Starting up Server...");
@@ -46,9 +47,9 @@ public class Main {
             LOG.info("Could not register Service. " + e.getMessage());
         }
 
-        ServerStart impl = new ServerStart("Bernsch", host, 0, spreadGroupName);
+        ServerStart impl = new ServerStart("Prinzi", host, 0, spreadGroupName);
         //ServerStart impl1 = new ServerStart("Prinzi", host, 0, spreadGroupName);
-
+        
     }
 
 }
