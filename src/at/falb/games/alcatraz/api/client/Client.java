@@ -117,15 +117,20 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Remo
                     }
 
                     //Actual Login Process
-                    try {
-                        System.out.println("Das sollt nur einmal da stehn: ");
-                        System.out.println(s.get(0).loginClient(player));
-                    } catch (RemoteException ex) {
-                        //Wenn der erste nicht erreichbar ist, probiere die Anderen Server
-                        for (ServerInterface server : s) {
-                            try {
-                                server.loginClient(player);
-                            } catch (RemoteException e) {
+                    boolean loginWorks = false;
+                    while (!loginWorks) {
+                        try {
+                            System.out.println("Das sollt nur einmal da stehn: ");
+                            System.out.println(s.get(0).loginClient(player));
+                            loginWorks = true;
+                        } catch (RemoteException ex) {
+                            //Wenn der erste nicht erreichbar ist, probiere die Anderen Server
+                            for (ServerInterface server : s) {
+                                try {
+                                    server.loginClient(player);
+                                    loginWorks = true;
+                                } catch (RemoteException e) {
+                                }
                             }
                         }
                     }
@@ -141,14 +146,20 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Remo
                     player.setRMI("rmi://localhost:10099".concat(player.getUsername()));
 
                     //Actual Logout process
-                    try {
-                        s.get(0).logoutClient(player);
-                        System.out.println("Client logged out");
-                    } catch (RemoteException ex) {
-                        for (ServerInterface server : s) {
-                            try {
-                                server.logoutClient(player);
-                            } catch (RemoteException e){}
+                    boolean logoutWorks = false;
+                    while (!logoutWorks) {
+                        try {
+                            s.get(0).logoutClient(player);
+                            logoutWorks = true;
+                            System.out.println("Client logged out");
+                        } catch (RemoteException ex) {
+                            for (ServerInterface server : s) {
+                                try {
+                                    server.logoutClient(player);
+                                    logoutWorks = true;
+                                } catch (RemoteException e) {
+                                }
+                            }
                         }
                     }
                     break;

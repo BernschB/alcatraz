@@ -92,12 +92,19 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
                 }
 
                 //Sets ID between 0 and maxplayers-1 on the fly
-                player.setID(l.getCurrentPlayers());
-                for (Player pla : l.getListOfPlayers()) {
-                    if (pla.getID() == player.getID()) {
-                        player.setID(player.getID() - 1);
+                ArrayList<Integer> ids = new ArrayList<>();
+
+                for(Player pla : l.getListOfPlayers()){
+                    ids.add(pla.getID());
+                }
+                
+                for (int i = 0; i < 4; i++){
+                    if (!ids.contains(i)){
+                        player.setID(i);
+                        break;
                     }
                 }
+ 
 
                 l.addPlayer(player);
 
