@@ -34,7 +34,7 @@ public class Main {
     public static void main(String[] args) throws SpreadException, RemoteException, IOException {
 
         //Change dependin on your address
-        String host = "127.0.0.1";
+        String host = "192.168.5.1";//"127.0.0.1";
         String spreadGroupName = "alcatraz-SpreadGroup";
 
         System.out.println("Starting up Server...");

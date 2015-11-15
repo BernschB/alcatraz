@@ -106,6 +106,7 @@ public class Player implements Serializable {
         String[] rmis = null;
         String regIP = null;
 
+        System.out.println("serverIPs: " + serverIPs);
         //Locate all server Registrys to not have SPOF
         for (String ip : serverIPs) {
             try {

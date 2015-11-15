@@ -15,6 +15,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -45,6 +46,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Remo
     private Lobby lobby = new Lobby();
 
     public static void main(String[] args) throws IOException {
+        String host = InetAddress.getLocalHost().getHostAddress();
 
         ArrayList<ServerInterface> s = new ArrayList<>();
         InputStreamReader isr;
@@ -95,7 +97,9 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Remo
                     player.setMaxPlayers(Integer.parseInt(br.readLine()));
 
                     //RMI Address for Client
-                    player.setRMI("rmi://localhost:10099/".concat(player.getUsername()));
+                    player.setRMI("rmi://" + host + ":10099/".concat(player.getUsername()));
+//                    player.setRMI("rmi://localhost:10099/".concat(player.getUsername()));
+
                     ClientInterface c = new Client();
 
                     //Try to create a Registry. If there is already a registry, continue
@@ -143,7 +147,9 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Remo
                     br = new BufferedReader(isr);
                     player.setUsername(br.readLine());
 
-                    player.setRMI("rmi://localhost:10099".concat(player.getUsername()));
+                    player.setRMI("rmi://" + host + ":10099/".concat(player.getUsername()));
+//                    player.setRMI("rmi://localhost:10099/".concat(player.getUsername()));
+
 
                     //Actual Logout process
                     boolean logoutWorks = false;
