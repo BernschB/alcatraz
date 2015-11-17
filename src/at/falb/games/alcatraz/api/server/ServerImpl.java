@@ -238,7 +238,7 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
             ci.add((ClientInterface) Naming.lookup(rmi));
         }
 
-        System.out.println("NumberPlayer: " + lob.getMaxPlayers());
+//        System.out.println("NumberPlayer: " + lob.getMaxPlayers());
 
         //Calls "gameStart" on every Client participating in the game
         int i = 0;
@@ -247,6 +247,8 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
             i++;
         }
         System.out.println("remove Lobby");
+        this.lobby.delLobby(lob);
+        System.out.println("Lobby with " + lob.getMaxPlayers() + " Players removed");
 
     }
 

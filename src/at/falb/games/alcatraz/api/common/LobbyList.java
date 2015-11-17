@@ -47,6 +47,10 @@ public class LobbyList extends ArrayList {
         return null;
     }
     
+    public void delLobby(Lobby lobby) { 
+        this.lobby.remove(lobby);
+    }
+    
     public int getSeqNr() {
         return seqNr;
     }
