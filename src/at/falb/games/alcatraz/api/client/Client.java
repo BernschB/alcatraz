@@ -36,6 +36,7 @@ import java.util.logging.Logger;
 public class Client extends UnicastRemoteObject implements ClientInterface, Remote, Serializable {
 
     private static int globalCounter = 0;
+    private boolean started = false;
 
     public Client() throws RemoteException {
     }
@@ -220,27 +221,35 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Remo
 
     @Override
     public int gameStart(Lobby lob, Player me) throws RemoteException {
-        lobby = lob;
-        System.out.println("Jetzt startet das Spiel!!! whuuuhh");
-        //Player me = new Player();
-        Registry reg;
+        if(started == false)
+        {
+            lobby = lob;
+            System.out.println("Jetzt startet das Spiel!!! whuuuhh");
+            //Player me = new Player();
+            Registry reg;
 
-        //Folgende Zeilen ersetzen die Main-Routine in PlayerOne usw.
-        //Erstellt einen RMI-Registry für RMI Binds auf dem Well known RMI Registry Port (10099). RMI Adressen müssen dann hier Angemeldet werden.
-        System.out.println("Create RMI-Registry...");
-        try {
-            LocateRegistry.createRegistry(10099);
-        } catch (RemoteException ex) {
+            //Folgende Zeilen ersetzen die Main-Routine in PlayerOne usw.
+            //Erstellt einen RMI-Registry für RMI Binds auf dem Well known RMI Registry Port (10099). RMI Adressen müssen dann hier Angemeldet werden.
+            System.out.println("Create RMI-Registry...");
+            try {
+                LocateRegistry.createRegistry(10099);
+            } catch (RemoteException ex) {
+            }
+
+            try {
+                GameImpl game = new GameImpl();
+                game.startGame(lobby, me);
+                Naming.rebind(me.getRMI(), game);
+                System.out.println("Bind with: " + me.getRMI() + "           ok");
+
+            } catch (RemoteException | MalformedURLException ex) {
+                System.out.println("shiet");
+            }
+            started = true;
         }
-
-        try {
-            GameImpl game = new GameImpl();
-            game.startGame(lobby, me);
-            Naming.rebind(me.getRMI(), game);
-            System.out.println("Bind with: " + me.getRMI() + "           ok");
-
-        } catch (RemoteException | MalformedURLException ex) {
-            System.out.println("shiet");
+        else
+        {
+            System.out.println("started" + started);
         }
 
         return 0;
