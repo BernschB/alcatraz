@@ -221,8 +221,10 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Remo
 
     @Override
     public int gameStart(Lobby lob, Player me) throws RemoteException {
+        System.out.println("bevor if started " + started);
         if(started == false)
         {
+            started = true;
             lobby = lob;
             System.out.println("Jetzt startet das Spiel!!! whuuuhh");
             //Player me = new Player();
@@ -245,7 +247,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Remo
             } catch (RemoteException | MalformedURLException ex) {
                 System.out.println("shiet");
             }
-            started = true;
+            System.out.println("Setzt started auf true " + started);
         }
         else
         {
