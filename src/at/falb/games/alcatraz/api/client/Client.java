@@ -186,10 +186,13 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Remo
                             System.out.println("Client logged out");
                         } catch (RemoteException ex) {
                             for (ServerInterface server : s) {
+                                System.out.println("ServerInterface server : s");
                                 try {
                                     server.logoutClient(player);
                                     logoutWorks = true;
+                                    System.out.println("server.logoutClient(player); logoutWorks");
                                 } catch (RemoteException e) {
+                                    System.out.println("server.logoutClient(player);");
                                 }
                             }
                         } catch (IndexOutOfBoundsException e) {
