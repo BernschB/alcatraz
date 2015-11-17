@@ -70,8 +70,10 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
     //Gets called after all servers got the Login Request from Client
     protected LobbyList realLogin(Player player, LobbyList lob) throws NotBoundException, MalformedURLException {
 
+        ClientInterface doubleName;
         lobby = lob;
         lobby.seqNrPlus();
+        
 
         System.out.println("SeqNr = " + lobby.getSeqNr());
 
@@ -88,6 +90,12 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
                 //Checks if there is a player with that name in any Lobby --> unique
                 if (l.getSpecificPlayer(player) == -1) {
                     System.out.println("Der Spielername existiert schon!");
+                    try {
+                        doubleName = (ClientInterface) Naming.lookup(player.getRMI());
+                        doubleName.playerExists();
+                    } catch (RemoteException ex) {
+                        Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     return lobby;
                 }
 

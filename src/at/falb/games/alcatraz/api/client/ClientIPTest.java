@@ -114,7 +114,7 @@ public class ClientIPTest extends UnicastRemoteObject implements ClientInterface
                             }
                         } catch (IOException | NumberFormatException ex) {
                             System.out.println("Bitte geben Sie 2,3 oder 4 ein!");
-    //                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                            //                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     } while (!checkInput);
 
@@ -195,7 +195,7 @@ public class ClientIPTest extends UnicastRemoteObject implements ClientInterface
                             System.out.println("User konnte nicht gelöscht werden");
                             break;
                         }
-                        
+
                     }
                     break;
                 case 3:
@@ -244,6 +244,11 @@ public class ClientIPTest extends UnicastRemoteObject implements ClientInterface
         }
 
         return 0;
+    }
+
+    @Override
+    public void playerExists() throws RemoteException {
+        System.out.println("Der von Ihnen gewählte Spielername ist schon vergeben!");
     }
 
 }

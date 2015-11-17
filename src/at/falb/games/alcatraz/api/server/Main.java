@@ -37,6 +37,7 @@ public class Main {
 
         //Change dependin on your address
         String host = InetAddress.getLocalHost().getHostAddress();//"127.0.0.1";
+        String spreadHostName = "Prinzi"; //S".concat(host); //Prinzi
         String spreadGroupName = "alcatraz-SpreadGroup";
 
         System.out.println("Starting up Server..." + host);
@@ -51,7 +52,7 @@ public class Main {
 
         //hardcoded private spread name
         try {
-            ServerStart impl = new ServerStart("Prinzi", host, 0, spreadGroupName);
+            ServerStart impl = new ServerStart(spreadHostName, host, 0, spreadGroupName);
         } catch (MissingResourceException e) {
             System.out.println("Resource nicht gefunden");
         }
