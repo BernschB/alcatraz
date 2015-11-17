@@ -46,8 +46,8 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Remo
     private Lobby lobby = new Lobby();
 
     public static void main(String[] args) throws IOException {
-//        String host = InetAddress.getLocalHost().getHostAddress();
-        String host = "192.168.5.1";
+        String host = InetAddress.getLocalHost().getHostAddress();
+//        String host = "192.168.5.1";
 
         ArrayList<ServerInterface> s = new ArrayList<>();
         InputStreamReader isr;

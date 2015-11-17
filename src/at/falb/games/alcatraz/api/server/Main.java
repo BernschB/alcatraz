@@ -37,7 +37,7 @@ public class Main {
 
         //Change dependin on your address
         String host = InetAddress.getLocalHost().getHostAddress();//"127.0.0.1";
-        String spreadHostName = "Prinzi"; //S".concat(host); //Prinzi
+        String spreadHostName = "Bernsch"; //S".concat(host); //Prinzi
         String spreadGroupName = "alcatraz-SpreadGroup";
 
         System.out.println("Starting up Server..." + host);
