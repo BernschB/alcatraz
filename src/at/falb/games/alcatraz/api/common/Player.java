@@ -123,7 +123,7 @@ public class Player implements Serializable {
                 rmis = LocateRegistry.getRegistry(ip, 1099).list();
                 System.out.println("Alle gefundenen RMI-Hosts auf der Registry: " + Arrays.toString(rmis));
                 regIP =  ip;
-                break;
+                //break;
             } catch (RemoteException ex) {}
         }
         

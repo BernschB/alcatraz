@@ -180,13 +180,18 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Remo
                     //Actual Logout process
                     boolean logoutWorks = false;
                     while (!logoutWorks) {
+                        System.out.println("!logoutWorks");
                         try {
                             s.get(0).logoutClient(player);
                             logoutWorks = true;
                             System.out.println("Client logged out");
                         } catch (RemoteException ex) {
                             for (ServerInterface server : s) {
-                                System.out.println("ServerInterface server : s");
+                                System.out.println("alle Server" + server);
+                            }
+                            System.out.println("alle Server" + s);
+                            for (ServerInterface server : s) {
+                                System.out.println("ServerInterface server : s" + server);
                                 try {
                                     server.logoutClient(player);
                                     logoutWorks = true;
