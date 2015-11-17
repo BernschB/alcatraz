@@ -246,6 +246,7 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
             cli.gameStart(lob, pl.get(i));
             i++;
         }
+        System.out.println("remove Lobby");
 
     }
 

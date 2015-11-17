@@ -33,11 +33,11 @@ import java.util.logging.Logger;
  *
  * @author HTM_Campus
  */
-public class Client extends UnicastRemoteObject implements ClientInterface, Remote, Serializable {
+public class ClientIPTest extends UnicastRemoteObject implements ClientInterface, Remote, Serializable {
 
     private static int globalCounter = 0;
 
-    public Client() throws RemoteException {
+    public ClientIPTest() throws RemoteException {
     }
 
     Properties props = new Properties();
@@ -47,7 +47,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Remo
 
     public static void main(String[] args) throws IOException {
 //        String host = InetAddress.getLocalHost().getHostAddress();
-        String host = "192.168.5.1";
+        String host = "192.168.5.2";
 
         ArrayList<ServerInterface> s = new ArrayList<>();
         InputStreamReader isr;
@@ -56,7 +56,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Remo
         boolean end = false;
         int maxPlayer = 2;
 
-        Client client = new Client();
+        ClientIPTest client = new ClientIPTest();
 
         FileReader reader = new FileReader("src/at/falb/games/alcatraz/api/common/server.properties");
         client.props.load(reader);
@@ -142,7 +142,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Remo
                     try {
                         s = dummy.regPlayer(numberServers, serverIPs);
                     } catch (FileNotFoundException | NotBoundException ex) {
-                        Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(ClientIPTest.class.getName()).log(Level.SEVERE, null, ex);
                     }
 
                     //Actual Login Process

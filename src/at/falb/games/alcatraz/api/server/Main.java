@@ -7,11 +7,13 @@ package at.falb.games.alcatraz.api.server;
 
 import at.falb.games.alcatraz.api.common.*;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,10 +36,10 @@ public class Main {
     public static void main(String[] args) throws SpreadException, RemoteException, IOException {
 
         //Change dependin on your address
-        String host = "192.168.5.1";//"127.0.0.1";
+        String host = InetAddress.getLocalHost().getHostAddress();//"127.0.0.1";
         String spreadGroupName = "alcatraz-SpreadGroup";
 
-        System.out.println("Starting up Server...");
+        System.out.println("Starting up Server..." + host);
 
         //Erstellt einen RMI-Registry für RMI Binds auf dem Well known RMI Registry Port (1099). RMI Adressen müssen dann hier Angemeldet werden.
         try {
@@ -48,7 +50,12 @@ public class Main {
         }
 
         //hardcoded private spread name
-        ServerStart impl = new ServerStart("Prinzi", host, 0, spreadGroupName);
+        try {
+            ServerStart impl = new ServerStart("Prinzi", host, 0, spreadGroupName);
+        } catch (MissingResourceException e) {
+            System.out.println("Resource nicht gefunden");
+        }
+        
         //ServerStart impl1 = new ServerStart("Prinzi", host, 0, spreadGroupName);
         
     }

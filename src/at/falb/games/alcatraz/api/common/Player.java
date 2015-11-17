@@ -30,6 +30,7 @@ public class Player implements Serializable {
     private String username;
     private int maxPlayers;
     private String RMI;     //Hätte mir gedacht, die RMI der Clients wird ihnen vom Server übergeben. Also die Clients binden sich nicht selbst, sondern bekommen zur Laufzeit von den Servern eine RMI Adresse zugewisesn.
+    private String IP;
     ArrayList<ServerInterface> s = new ArrayList<>();
 
     public Player() {
@@ -85,6 +86,15 @@ public class Player implements Serializable {
     public void setRMI(String RMI) {
         this.RMI = RMI;
     }
+    
+    public String getIP() {
+        return IP;
+    }
+
+
+    public void setIP(String IP) {
+        this.IP = IP;
+    }
 
     /**
      * @return the ID
@@ -113,6 +123,7 @@ public class Player implements Serializable {
                 rmis = LocateRegistry.getRegistry(ip, 1099).list();
                 System.out.println("Alle gefundenen RMI-Hosts auf der Registry: " + Arrays.toString(rmis));
                 regIP =  ip;
+                break;
             } catch (RemoteException ex) {}
         }
         

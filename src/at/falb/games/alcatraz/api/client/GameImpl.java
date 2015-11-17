@@ -11,8 +11,10 @@ import at.falb.games.alcatraz.api.Prisoner;
 import at.falb.games.alcatraz.api.common.GameInterface;
 import at.falb.games.alcatraz.api.common.Lobby;
 import at.falb.games.alcatraz.api.common.Player;
+import java.io.IOException;
 import java.io.Serializable;
 import static java.lang.Thread.sleep;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -60,30 +62,35 @@ public class GameImpl extends UnicastRemoteObject implements GameInterface, Move
     
     @Override
     public void moveDone(at.falb.games.alcatraz.api.Player player, Prisoner prisoner, int rowOrCol, int row, int col) {
-        System.out.println("Before Sleep");
-        myMoveDone(player, prisoner, rowOrCol, row, col);
-        System.out.println("after Sleep");
         otherMoveDone(player, prisoner, rowOrCol, row, col);
+        System.out.println("Before myMoveDone");
+        myMoveDone(player, prisoner, rowOrCol, row, col);
+        System.out.println("after myMoveDone");
     }
     
     public void myMoveDone(at.falb.games.alcatraz.api.Player player, Prisoner prisoner, int rowOrCol, int row, int col) {
         System.out.println("moving " + prisoner + " to " + (rowOrCol == Alcatraz.ROW ? "row" : "col") + " " + (rowOrCol == Alcatraz.ROW ? row : col));
     }
     
-     public void otherMoveDone(at.falb.games.alcatraz.api.Player player, Prisoner prisoner, int rowOrCol, int row, int col) {
+     public void otherMoveDone(at.falb.games.alcatraz.api.Player player, Prisoner prisoner, int rowOrCol, int row, int col) {// throws InterruptedException {
         System.out.println("otherMoveDone");
         System.out.println(this.otherPlayers.get(0).getRMI());
         ArrayList<Integer> notDone = new ArrayList<Integer>();
+        
 
         for(int i = 0; i < numPlayer - 1; i++)
         {
+            
+            System.out.println("this.otherPlayers.get(" + i + ").getRMI()" + this.otherPlayers.get(i).getRMI());
+            System.out.println("Versuche Zug auf (" + this.otherPlayers.get(i).getUsername() + " auszuführen");
             try {     
                 GameInterface game = (GameInterface) Naming.lookup(this.otherPlayers.get(i).getRMI());
                 System.out.println("pre remoteMoveDone" + this.otherPlayers.get(i).getRMI());
                 game.remoteMoveDone(player, prisoner, rowOrCol, row, col);
                 System.out.println("remoteMoveDone");
             } catch (NotBoundException | MalformedURLException | RemoteException ex) {
-                Logger.getLogger(GameImpl.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("notDone.add(i)");
+ //               Logger.getLogger(GameImpl.class.getName()).log(Level.SEVERE, null, ex);
                 notDone.add(i);
             }
 //            } catch (UnknownHostException e) {
@@ -91,17 +98,32 @@ public class GameImpl extends UnicastRemoteObject implements GameInterface, Move
 //            }
             
         }
-       
+        System.out.println("Before notDone");
         for(int i : notDone)
         {
+            int k =0;
             int j = 0;
+            System.out.println("in notDone j = " + j + " k = " + k);
             while(j == 0)
             {
-                try {
-                    sleep(1000);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(GameImpl.class.getName()).log(Level.SEVERE, null, ex);
+                k++;
+                System.out.println("in notDoneWhile" + j);
+                while(true)
+                {
+                    try {
+                        if(InetAddress.getByName(this.otherPlayers.get(i).getIP()).isReachable(2000) == true)
+                        {
+                            System.out.println("Ping to " + this.otherPlayers.get(i).getIP() + " OK");  
+                            break;
+                        }
+                    } catch (java.net.UnknownHostException ex) {
+                        Logger.getLogger(GameImpl.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (IOException ex) {
+                        Logger.getLogger(GameImpl.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    System.out.println("Ping to " + this.otherPlayers.get(i).getIP() + " not OK");    
                 }
+                
                 try {     
                     GameInterface game = (GameInterface) Naming.lookup(this.otherPlayers.get(i).getRMI());
                     System.out.println("pre remoteMoveDone" + this.otherPlayers.get(i).getRMI());
@@ -109,7 +131,8 @@ public class GameImpl extends UnicastRemoteObject implements GameInterface, Move
                     System.out.println("remoteMoveDone");
                     j = 1;
                 } catch (NotBoundException | MalformedURLException | RemoteException ex) {
-                    Logger.getLogger(GameImpl.class.getName()).log(Level.SEVERE, null, ex);
+                    System.out.println("remoteMoveDoneCatch");
+//                    Logger.getLogger(GameImpl.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
@@ -119,23 +142,27 @@ public class GameImpl extends UnicastRemoteObject implements GameInterface, Move
     @Override
     public void remoteMoveDone(at.falb.games.alcatraz.api.Player player, Prisoner prisoner, int rowOrCol, int row, int col) throws RemoteException  {
 
-        System.out.println("remote Move Done moving " + prisoner + " to " + (rowOrCol == Alcatraz.ROW ? "row" : "col") + " " + (rowOrCol == Alcatraz.ROW ? row : col));
-
+ 
         System.out.println(numPlayer);
         for (int i = 0; i < numPlayer; i++) {
-            if((!player.equals(this.lobby.getListOfPlayers().get(i))))
+//            if((player.getName().equals(this.lobby.getListOfPlayers().get(i).getUsername())))
             {
 //                System.out.println("in for " + i);
 //                System.out.println("Player Name" + player.getName());
+                System.out.println("Player " + player);
+                System.out.println("Player other" + other[i].getPlayer(i));
 //                System.out.println("Player ID" + player.getId());
 //                System.out.println("Prisoner ID" + prisoner.getId());
 //                System.out.println("Player " + other[i].getPlayer(player.getId()).getName());
-//                System.out.println("Prisoner " + other[i].getPrisoner(prisoner.getId()));
-                other[i].doMove(other[i].getPlayer(player.getId()), other[i].getPrisoner(prisoner.getId()), rowOrCol, row, col);   
+//                System.out.println("Prisoner " + other[i].getPrisoner(prisoner.getId()));             
+//                System.out.println("Start !player.equals(this.lobby.getListOfPlayers().get(i)) == true");
+//                other[i].doMove(other[i].getPlayer(player.getId()), other[i].getPrisoner(prisoner.getId()), rowOrCol, row, col);   
                 other[i].doMove(player, prisoner, rowOrCol, row, col);
-//                System.out.println("doMovedone");
+//                System.out.println(" End !player.equals(this.lobby.getListOfPlayers().get(i)) == true");
             }
+            System.out.println("!player.equals(this.lobby.getListOfPlayers().get(i)) == true i = " + i);
         }
+        System.out.println("remote Move Done moving " + prisoner + " to " + (rowOrCol == Alcatraz.ROW ? "row" : "col") + " " + (rowOrCol == Alcatraz.ROW ? row : col));
     }
 
 
@@ -200,9 +227,9 @@ public class GameImpl extends UnicastRemoteObject implements GameInterface, Move
         alcatraz.get(player.getID()).start();
     } 
 
-    private static class nested {
-
-        public nested() {
-        }
-    }
+//    private static class nested {
+//
+//        public nested() {
+//        }
+//    }
 }

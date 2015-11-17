@@ -6,6 +6,7 @@
 package at.falb.games.alcatraz.api.common;
 
 import at.falb.games.alcatraz.api.Prisoner;
+import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
