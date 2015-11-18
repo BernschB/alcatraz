@@ -14,6 +14,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
+import static java.lang.Thread.sleep;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.rmi.Naming;
@@ -237,10 +238,29 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
     public void startGame(Lobby lob) throws RemoteException, NotBoundException, MalformedURLException {
 
         ArrayList<Player> pl = new ArrayList(lob.getListOfPlayers());
+        ArrayList<Player> sortedPlayers = new ArrayList<>();
         ArrayList<ClientInterface> ci = new ArrayList<>();
         String rmi;
 
-        for (Player p : pl) {
+        int i = 0;
+        boolean sorted = false; 
+        while(sorted == false){
+            for (Player p : pl){
+                if (p.getID() == i){
+                    sortedPlayers.add(p);
+                    i++;
+                    if (i == lob.getMaxPlayers()-1){
+                        sorted = true;
+                    }
+                }
+            }
+        }
+        System.out.println("Sortierte Spieler");
+        for (Player p : sortedPlayers){
+            System.out.println(p.getID());
+        }
+        
+        for (Player p : sortedPlayers){
             rmi = p.getRMI();
             System.out.println(rmi);
             ci.add((ClientInterface) Naming.lookup(rmi));
@@ -249,12 +269,23 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface, 
 //        System.out.println("NumberPlayer: " + lob.getMaxPlayers());
 
         //Calls "gameStart" on every Client participating in the game
-        int i = 0;
+        
+        Lobby finalLobby = new Lobby();
+        for (Player p : sortedPlayers){
+            finalLobby.addPlayer(p);
+        }
+        
+        i = 0;
         for (ClientInterface cli : ci) {
-            cli.gameStart(lob, pl.get(i));
+            cli.gameStart(finalLobby, sortedPlayers.get(i));
             i++;
         }
         System.out.println("remove Lobby");
+        try {
+            sleep(2000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
         this.lobby.delLobby(lob);
         System.out.println("Lobby with " + lob.getMaxPlayers() + " Players removed");
 

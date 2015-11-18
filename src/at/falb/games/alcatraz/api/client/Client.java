@@ -177,6 +177,13 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Remo
                     player.setIP(host);
 //                    player.setRMI("rmi://localhost:10099/".concat(player.getUsername()));
 
+                    //Client meet Servers here
+                    try {
+                        s = dummy.regPlayer(numberServers, serverIPs);
+                    } catch (FileNotFoundException | NotBoundException ex) {
+                        Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    
                     //Actual Logout process
                     boolean logoutWorks = false;
                     while (!logoutWorks) {
